@@ -149,3 +149,42 @@ SELECT count(1) from yellow_taxi_trips;
 ```
 
 ## [DE Zoomcamp 1.2.5 - Running Postgres and pgAdmin with Docker-Compose](https://www.youtube.com/watch?v=hKI6PkPhpa0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=9)
+
+Docker compose allows us to run multi-container docker applications, by specifying a number of services that must be run together in a single YAML file. For more information, see [docker docs](https://docs.docker.com/compose/).
+
+**Step 1:** [install docker compose](https://docs.docker.com/compose/install/linux/#install-using-the-repository). In my machine, I am using Ubuntu and I run the command below.
+```
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
+```
+
+**Step 2:** write a [docker-compose.yaml](./docker-compose.yaml) file. Note that in this file we do not specify the network name, since docker compose will already consider the specified services as part of the same network.
+
+**Step 3:** start docker compose.
+```
+docker compose up
+```
+
+If the above command raises this exception ```Failed to create the directory /var/lib/pgadmin/sessions```, we can stop the process and run the next command, as explained in this [StackOverflow question](https://stackoverflow.com/questions/64781245/permission-denied-var-lib-pgadmin-sessions-in-docker) and in the [pgadmin documentation](https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html#mapped-files-and-directories).
+```
+sudo chown -R 5050:5050 ../pgadmin_conn_data/
+docker compose up
+```
+
+**Step 4:** create the server using pgadmin's interface.
+
+![](./img/register-server5.png)
+
+![](./img/register-server6.png)
+
+**Step 5:** to stop the process, just use ```Ctrl C``` and the command:
+```
+docker compose down
+```
+
+**Step 6:** if we want to run docker compose in detached mode, we can run the following command:
+```
+docker compose up -d
+```
+
+## [DE Zoomcamp 1.2.6 - SQL Refreshser](https://www.youtube.com/watch?v=QEcps_iskgg&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=10)
