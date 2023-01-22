@@ -4,7 +4,7 @@ TODO
 
 ## [DE Zoomcamp 1.2.2 - Ingesting NY Taxi Data to Postgres](https://www.youtube.com/watch?v=2JM-ziJt0WI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-**Step 1:** pull the PostgreSQL docker image that we will use througout the zoomcamp.
+**Step 1:** pull the PostgreSQL docker image that we will use throughout the zoomcamp.
 ```
 docker pull postgres:13
 ```
@@ -293,3 +293,40 @@ LIMIT 100;
 ```
 
 ## [DE Zoomcamp 1.3.1 - Introduction to Terraform Concepts & GCP Pre-Requisites](https://www.youtube.com/watch?v=Hajwnmj0xfQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=11)
+
+### What is Terraform?
+
+It is an open source project by HashiCorp, which is used for provisioning infrastructure resources through a set of configuration files. The resources can be storage, containers, networking resources, etc.
+
+Terraform uses an Infrastructure-as-Code (IaC) approach, that supports DevOps best practices to track changes in the cloud infrastructure used by an application.
+
+IaC allows us to build, change and manage an application infrastructure using configuration files that can be versioned, reused and shared. This allows any data engineer to reproduce all steps performed to build the infrastructure.
+
+**How to install Terraform (Ubuntu):** follow [these instructions](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+
+### Google Cloud Platform (GCP)
+
+In this part, Sejal Vaidya shows us how to create a new project in GCP and a new service account. A service account consists of an account for a specific servica (like a data pipeline, web service, etc). Everything that this service needs to access (e.g., resources) is configured in its account. Therefore, it has restricted permissions to use only the resources that it needs.
+
+**How to install Gcloud (Ubuntu):** follow [these instructions](https://cloud.google.com/sdk/docs/install#deb). After installing, type ```gcloud -v``` in the terminal. The output must be something like this:
+
+	Google Cloud SDK 414.0.0
+	alpha 2023.01.13
+	beta 2023.01.13
+	bq 2.0.84
+	bundled-python3-unix 3.9.16
+	core 2023.01.13
+	gcloud-crc32c 1.0.0
+	gsutil 5.18
+
+**Step 1:** after creating a service account key (watch lesson video at [10:29](https://www.youtube.com/watch?v=Hajwnmj0xfQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=11&t=629s)), we need to export the GOOGLE_APPLICATION_CREDENTIALS variable (change the path below to the correct one in your machine).
+```
+export GOOGLE_APPLICATION_CREDENTIALS="/home/padilha/projects/de-zoomcamp/dtc-de-375514-849c13503247.json"
+
+# Refresh token, and verify authentication
+gcloud auth application-default login
+```
+
+**Step 2:** add permissions to our service account (watch lesson video at [17:26](https://www.youtube.com/watch?v=Hajwnmj0xfQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=11&t=1046s)).
+
+## [DE Zoomcamp 1.3.2 - Creating GCP Infrastructure with Terraform](https://www.youtube.com/watch?v=dNkEgO-CExg&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=12)
