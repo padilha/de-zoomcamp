@@ -1,0 +1,4 @@
+**/.terraform
+**/.terraform.lock.hcl
+**/terraform.tfstate
+dtc-de-375514-849c13503247.json
