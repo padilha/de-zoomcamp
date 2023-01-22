@@ -1,5 +1,5 @@
 ## Question 1.
---iidfile string          Write the image ID to the file
+```--iidfile string``` has the text _Write the image ID to the file_
 
 ## Question 2.
 Command output:
@@ -10,7 +10,7 @@ Command output:
     setuptools 58.1.0
     wheel      0.38.4
 
-3 packages in total
+python:3.9 has a total of 3 packages installed.
 
 # Prepare Postgres
 
@@ -110,7 +110,7 @@ WHERE
 GROUP BY 1, 2;
 ```
 
-    Output:
+Output:
 
     +----------------------+-----------------+-------+
     | lpep_pickup_datetime | passenger_count | count |
@@ -124,7 +124,9 @@ GROUP BY 1, 2;
     | 2019-01-01           | 6               | 273   |
     +----------------------+-----------------+-------+
 
-# Question 6. Largest tip
+In 2019-01-01 1282 trips had 2 passengers and 254 trips had 3 passengers.
+
+## Question 6. Largest tip
 
 Query:
 ```sql
@@ -160,3 +162,5 @@ Output:
     +-------+------------+-------------------------------+
     SELECT 10
     Time: 0.037s
+
+For the passengers picked up in the Astoria Zone, Long Island City/Queens Plaza was the drop off zone that had the largest tip.
