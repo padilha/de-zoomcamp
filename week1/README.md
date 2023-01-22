@@ -11,7 +11,16 @@
 
 ## [DE Zoomcamp 1.2.1 - Introduction to Docker](https://www.youtube.com/watch?v=EYNwNlOrpr0&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-TODO
+### What is Docker?
+
+Docker is a tool that delivers software in containers, which are isolated from one to another, and contain all code and dependencies required to run some service (e.g., data pipeline).
+
+Docker has several advantages:
+1. It is easy to reproduce data pipelines in different environments.
+2. We can run local experiments and local tests, such as integration tests.
+3. It is useful to perform integration tests under CI/CD.
+4. We can deploy pipelines in the cloud (e.g., AWS Batch and Kubernetes jobs).
+5. We can process data using Serverless services (e.g., AWS Lambda).
 
 ## [DE Zoomcamp 1.2.2 - Ingesting NY Taxi Data to Postgres](https://www.youtube.com/watch?v=2JM-ziJt0WI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
