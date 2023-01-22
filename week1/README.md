@@ -1,4 +1,4 @@
-## Week 1 overview
+## Week 1 Overview
 
 * [DE Zoomcamp 1.2.1 - Introduction to Docker](#de-zoomcamp-121---introduction-to-docker)
 * [DE Zoomcamp 1.2.2 - Ingesting NY Taxi Data to Postgres](#de-zoomcamp-122---ingesting-ny-taxi-data-to-postgres)
@@ -341,3 +341,27 @@ gcloud auth application-default login
 **Step 2:** add permissions to our service account (watch lesson video at [17:26](https://www.youtube.com/watch?v=Hajwnmj0xfQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=11&t=1046s)).
 
 ## [DE Zoomcamp 1.3.2 - Creating GCP Infrastructure with Terraform](https://www.youtube.com/watch?v=dNkEgO-CExg&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=12)
+
+**Step 1:** initialize terraform and install any required plugins and settings. After running the command below, the .terraform directory is created.
+```
+terraform init
+```
+
+**Step 2:** run planning, which outputs what Terraform is going to create or modify in our infrastructure (note that it will not apply anything, it just shows us what is going to be done if we decide to apply the changes). This command will ask us to inform the gcp project id variable.
+```
+terraform plan
+```
+
+**Step 3:** apply the changes.
+```
+terraform apply
+```
+
+The output of the terraform apply command must be something similar to:
+
+	google_bigquery_dataset.dataset: Creating...
+	google_storage_bucket.data-lake-bucket: Creating...
+	google_bigquery_dataset.dataset: Creation complete after 2s [id=projects/dtc-de-375514/datasets/trips_data_all]
+	google_storage_bucket.data-lake-bucket: Creation complete after 4s [id=dtc_data_lake_dtc-de-375514]
+
+	Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
