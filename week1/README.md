@@ -13,7 +13,7 @@
 
 ### What is Docker?
 
-Docker is a tool that delivers software in containers, which are isolated from one to another, and contain all code and dependencies required to run some service (e.g., data pipeline).
+Docker is a tool that delivers software in containers, which are isolated from each other, and contain all code and dependencies required to run some service or task (e.g., data pipeline).
 
 Docker has several advantages:
 1. It is easy to reproduce data pipelines in different environments.
