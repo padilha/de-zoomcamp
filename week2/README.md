@@ -1,3 +1,10 @@
+## Week 2 Overview
+
+* [DE Zoomcamp 2.1.1 - Data Lake](#de-zoomcamp-211---data-lake)
+* [DE Zoomcamp 2.2.1 - Introduction to Workflow orchestration](#de-zoomcamp-221---introduction-to-workflow-orchestration)
+* [DE Zoomcamp 2.2.2 - Introduction to Prefect concepts](#de-zoomcamp-222---introduction-to-prefect-concepts)
+* [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](#de-zoomcamp-223---etl-with-gcp--prefect)
+
 ## [DE Zoomcamp 2.1.1 - Data Lake](https://www.youtube.com/watch?v=W3Zm6rjOq70&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
 ### What is a Data Lake?
@@ -69,7 +76,7 @@ Prefect Orion UI allows us to see our flows in an interactive an intuitive web i
 **Step 5:** create a new block for our PostgreSQL connector. In Prefect Orion UI, we first click in "Blocks" and then "Add Block +". Next, we add a SQLAlchemyConnector, and fill the corresponding form as follows and click on "Create".
 ![](./img/sql-block.png)
 
-**Step 6:** use the block in the code using this code snippet (see [ingest_data_flow_etl_with_sql_block.py](./ingest_data_flow_etl_with_sql_block.py)):
+**Step 6:** use the block in the code using this snippet (see [ingest_data_flow_etl_with_sql_block.py](./ingest_data_flow_etl_with_sql_block.py)):
 
 ```python
 from prefect_sqlalchemy import SqlAlchemyConnector
@@ -77,3 +84,6 @@ from prefect_sqlalchemy import SqlAlchemyConnector
 with SqlAlchemyConnector.load("postgres-connector") as database_block:
     ...
 ```
+
+## [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](https://www.youtube.com/watch?v=W-rMz_2GwqQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=19)
+
