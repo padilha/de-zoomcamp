@@ -164,3 +164,6 @@ Output:
     Time: 0.037s
 
 For the passengers picked up in the Astoria Zone, Long Island City/Queens Plaza was the drop off zone that had the largest tip.
+
+## Learning in public
+[LinkedIn](https://www.linkedin.com/posts/victor-padilha_dataengineering-dataanalytics-dezoomcamp-activity-7023252179117350912-Ch-d?utm_source=share&utm_medium=member_desktop)
