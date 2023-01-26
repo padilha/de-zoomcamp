@@ -87,3 +87,45 @@ with SqlAlchemyConnector.load("postgres-connector") as database_block:
 
 ## [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](https://www.youtube.com/watch?v=W-rMz_2GwqQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=19)
 
+**Step 1:** write an ETL script for saving data locally and uploading it to GCP (see [etl_web_to_gcs.py](./etl_web_to_gcs.py)).
+
+**Step 2:** run Prefect Orion UI from the terminal.
+```
+prefect orion start
+```
+
+**Step 3:** create a Prefect Block to store our GCP credentials (for generating GCP credentials, see [my notes of DE Zoomcamp 1.3.1 - Introduction to Terraform Concepts & GCP Pre-Requisites](../week1/README.md#de-zoomcamp-131---introduction-to-terraform-concepts--gcp-pre-requisites)), because blocks allow us to reuse configuration with external services, doing it in a secure way.
+
+In the Prefect Orion UI click on "Blocks" and then find the GCS Bucket Block.
+
+![](./img/gcs_bucket_block1.png)
+
+**Important note:** if GCS Bucket is not available, go to the terminal and run:
+```
+prefect block register -m prefect_gcp
+```
+
+**Step 4:** configure the GCS Bucket Block as follows. Note that we need to inform the GCP Bucket ID. If no bucket is available, see [my notes of DE Zoomcamp 1.3.2 - Creating GCP Infrastructure with Terraform](../week1/README.md#de-zoomcamp-132---creating-gcp-infrastructure-with-terraform). Additionally, if no GCP Credentials Block has been created yet, we need to create one by clicking on "Add +"
+
+![](./img/gcs_bucket_block2.png)
+
+**Step 5:** create a GCP Credentials Block as follows. In this example, I chose to inform the path of my json file that stores my credentials. But I could also have pasted the contents directly in the blue box under "The contents of the keyfile as dict".
+
+![](./img/gcp_credentials_block.png)
+
+**Step 6:** select the GCP Credentials Block that has just been created and click on "Create".
+
+![](./img/gcs_bucket_block3.png)
+
+**Step 7:** Prefect shows us how we can use the new block inside a Python script.
+
+![](./img/gcs_bucket_block4.png)
+
+**Step 8:** run [etl_web_to_gcs.py](./etl_web_to_gcs.py):
+```
+python etl_web_to_gcs.py
+```
+
+**Step 9:** check the uploaded data in GCP interface.
+
+![](./img/uploaded_data_gcp.png)
