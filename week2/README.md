@@ -126,6 +126,6 @@ prefect block register -m prefect_gcp
 python etl_web_to_gcs.py
 ```
 
-**Step 9:** check the uploaded data in GCP interface.
+**Step 9:** check the uploaded data in GCP.
 
 ![](./img/uploaded_data_gcp.png)
