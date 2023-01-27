@@ -6,6 +6,8 @@
 * [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](#de-zoomcamp-223---etl-with-gcp--prefect)
 * [DE Zoomcamp 2.2.4 - From Google Cloud Storage to Big Query](#de-zoomcamp-224---from-google-cloud-storage-to-big-query)
 * [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](#de-zoomcamp-225---parametrizing-flow--deployments-with-etl-into-gcs-flow)
+* [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](#de-zoomcamp-226---schedules--docker-storage-with-infrastructure)
+* [DE Zoomcamp 2.2.7 - Prefect Cloud/Additional resources](#de-zoomcamp-227---prefect-cloudadditional-resources)
 
 ## [DE Zoomcamp 2.1.1 - Data Lake](https://www.youtube.com/watch?v=W3Zm6rjOq70&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -203,3 +205,11 @@ We can see the deployment in the Prefect Orion UI.
 **Step 5:** trigger a quick run from the UI.
 
 ![](./img/quickrun.png)
+
+## [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](https://www.youtube.com/watch?v=psNSzqTsi-s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=22)
+
+TO DO
+
+## [DE Zoomcamp 2.2.7 - Prefect Cloud/Additional resources](https://www.youtube.com/watch?v=gGC23ZK7lr8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=23)
+
+TO DO
