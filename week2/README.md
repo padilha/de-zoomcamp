@@ -4,6 +4,8 @@
 * [DE Zoomcamp 2.2.1 - Introduction to Workflow orchestration](#de-zoomcamp-221---introduction-to-workflow-orchestration)
 * [DE Zoomcamp 2.2.2 - Introduction to Prefect concepts](#de-zoomcamp-222---introduction-to-prefect-concepts)
 * [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](#de-zoomcamp-223---etl-with-gcp--prefect)
+* [DE Zoomcamp 2.2.4 - From Google Cloud Storage to Big Query](#de-zoomcamp-224---from-google-cloud-storage-to-big-query)
+* [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](#de-zoomcamp-225---parametrizing-flow--deployments-with-etl-into-gcs-flow)
 
 ## [DE Zoomcamp 2.1.1 - Data Lake](https://www.youtube.com/watch?v=W3Zm6rjOq70&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -18,7 +20,13 @@ ETL is usually a Data Warehouse solution, used mainly for small amount of data a
 
 ## [DE Zoomcamp 2.2.1 - Introduction to Workflow orchestration](https://www.youtube.com/watch?v=8oLs6pzHp68&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=17)
 
-TO DO
+### What is a dataflow?
+
+A dataflow defines all extraction and processing steps that the data will be submitted to, also detailing any transformation and intermediate states of the dataset. For example, in an ETL process, a dataset is first extracted (E) from some source (e.g., website, API, etc), then transformed (T) (e.g., dealing with corrupted or missing values, joining datasets, datatype conversion, etc) and finally loaded (L) to some type of storage (e.g., data warehouse). For more details, read [What is Data Flow?](https://www.modernanalyst.com/Careers/InterviewQuestions/tabid/128/ID/6119/What-is-a-Data-Flow.aspx) and [Extract, transform, load](https://en.wikipedia.org/wiki/Extract,_transform,_load).
+
+### What is workflow orchestration?
+
+A workflow orchestration tool allows us to manage and visualize dataflows, while ensuring that they will be run according to a set of predefined rules. A good workflow orchestration tool makes it easy to schedule or execute dataflows remotely, handle faults, integrate with external services, increase reliability, etc. For more information, read [Workflow Orchestration vs. Data Orchestration — Are Those Different?](https://towardsdatascience.com/workflow-orchestration-vs-data-orchestration-are-those-different-a661c46d2e88) and [Your Code Will Fail (but that’s ok)](https://medium.com/the-prefect-blog/your-code-will-fail-but-thats-ok-f0327a208dbe).
 
 ## [DE Zoomcamp 2.2.2 - Introduction to Prefect concepts](https://www.youtube.com/watch?v=jAwRCyGLKOY&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=18)
 
@@ -129,3 +137,69 @@ python etl_web_to_gcs.py
 **Step 9:** check the uploaded data in GCP.
 
 ![](./img/uploaded_data_gcp.png)
+
+## [DE Zoomcamp 2.2.4 - From Google Cloud Storage to Big Query](https://www.youtube.com/watch?v=Cx5jt-V5sgE&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=19)
+
+**Step 1:** implement ETL script to extract data from GCS, transform and load it into BigQuery. See [etl_gcs_to_bq.py](./etl_gcs_to_bq.py), specially the function ```write_to_bq``` (note that we are going to use the [GcpCredentials that we have just created](#de-zoomcamp-223---etl-with-gcp--prefect)).
+
+**Step 2:** create a table in BigQuery. In my project, I already have a dataset named trips_data_all, [which was created using Terraform](../week1/README.md#de-zoomcamp-132---creating-gcp-infrastructure-with-terraform). For such, in the explorer menu click on the three dots and choose "Create table".
+
+![](./img/bq_create_table1.png)
+
+Next, fill the form as below and click on "Create".
+
+![](./img/bq_create_table2.png)
+
+**Step 4:** since we create the table using our dataset stored in GCS as a template, BigQuery has already populated our dataset. To test our script, let's delete all data. First, click on the table we have just created (under trips_data_all) and on "Query".
+
+![](./img/bq_delete_data1.png)
+
+Afterwards, type and run the following SQL statement:
+
+![](./img/bq_delete_data2.png)
+
+Under "Query Results" we should get a message like this one:
+
+![](./img/bq_delete_data3.png)
+
+**Step 5:** run ETL script.
+```
+python etl_gcs_to_bq.py
+```
+
+Now, if we click on our table and "Preview", we can see our records:
+
+![](./img/records.png)
+
+## [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](https://www.youtube.com/watch?v=QrDxPjX10iw&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=21)
+
+**Step 1:** a flow can have multiple runs with different paremeters that affect the outcome. Therefore, we reimplement [etl_web_to_gcs.py](./etl_web_to_gcs.py) to reuse the same flow to update different taxi trips datasets to GCP, see [parameterized_flow.py](./parameterized_flow.py). After running this new code, we can see the results in the GCS Bucket.
+
+![](./img/gcs_parameterized_flow.png)
+
+In Prefect Orion UI we can check our flow and its subflows.
+
+![](./img/subflows.png)
+
+**Step 2:** deploy the workflow using Prefect to avoid the need for triggering our workflow manually. In the terminal, we run the command shown below, which outputs a YAML file containing the workflow's deployment metadata.
+```
+prefect deployment build ./parameterized_flow.py:etl_parent_flow -n "Parameterized ETL"
+```
+
+**Step 3:** in the metadata YAML file, we find the line containing ```parameters : {}``` and add the parameters that we want to run.
+```yaml
+parameters : { "color": "yellow", "months": [1, 2, 3], "year": 2021 }
+```
+
+**Step 4:** create deployment on the API.
+```
+prefect deployment apply etl_parent_flow-deployment.yaml
+```
+
+We can see the deployment in the Prefect Orion UI.
+
+![](./img/deployment.png)
+
+**Step 5:** trigger a quick run from the UI.
+
+![](./img/quickrun.png)
