@@ -206,6 +206,19 @@ We can see the deployment in the Prefect Orion UI.
 
 ![](./img/quickrun.png)
 
+**Step 6:** after triggering a quick run, it will have a "Scheduled" state under "Flow runs". To deploy this workflow for execution, we need an agent.
+
+Agents consist of lightweight Python processes in our execution environment. They pick up scheduled workflow runs from Work Queues.
+
+Work Queues coordinate many deployments with many agents by collecting scheduled workflow runs for deployment according to some filtering criteria.
+
+Some nice references for better understanding the roles of Agents and Work Queues are: [Agents and Work Queues (Prefect docs)](https://docs.prefect.io/concepts/work-queues/) and [What’s the role of agents and work queues, and how the concept of agents differ between Prefect 1.0 and 2.0?](https://discourse.prefect.io/t/whats-the-role-of-agents-and-work-queues-and-how-the-concept-of-agents-differ-between-prefect-1-0-and-2-0/689)
+
+We launch an agent with the following command. The agent will automatically run our scheduled workflow.
+```
+prefect agent start --work-queue "default"
+```
+
 ## [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](https://www.youtube.com/watch?v=psNSzqTsi-s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=22)
 
 TO DO
