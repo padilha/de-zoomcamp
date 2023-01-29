@@ -299,4 +299,7 @@ In my implementation, when creating the GCS Bucket block, I used a "Service Acco
 
 ## [DE Zoomcamp 2.2.7 - Prefect Cloud/Additional resources](https://www.youtube.com/watch?v=gGC23ZK7lr8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=23)
 
-TO DO
+* [Prefect Docs](https://docs.prefect.io/)
+* [Prefect Cloud](https://www.prefect.io/cloud/)
+* [Anna Geller's GitHub](https://github.com/anna-geller)
+* [Prefect Community](https://discourse.prefect.io/)
