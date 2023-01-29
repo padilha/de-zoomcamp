@@ -3,10 +3,17 @@ from pathlib import Path
 from datetime import timedelta
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
-from prefect.tasks import task_input_hash
+# from prefect.tasks import task_input_hash
 # from random import randint
 
-@task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+# For some reason, the commented @task below is responsible for an exception when deploying the code using
+# the docker block as the infrastructure. It has something to do with cache_key_fn and cache_expiration.
+# I discovered this solution by reading a thread in the course's Slack.
+# See:
+# https://datatalks-club.slack.com/archives/C01FABYF2RG/p1674823816614039
+# https://github.com/PrefectHQ/prefect/issues/6086
+# @task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+@task(retries=3)
 def fetch(dataset_url: str) -> pd.DataFrame:
     """Read taxi data from web into pandas DataFrame"""
     # simulating failure to test retries

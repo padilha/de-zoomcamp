@@ -221,7 +221,81 @@ prefect agent start --work-queue "default"
 
 ## [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](https://www.youtube.com/watch?v=psNSzqTsi-s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=22)
 
-TO DO
+### How to schedule our workflows?
+
+Suppose we want our workflow to run every 5 minutes. We can do that in Orion UI by clicking on our deployment and on "Add" under "Schedule".
+
+![](./img/schedule1.png)
+
+![](./img/schedule2.png)
+
+After scheduling, our workflow will be run according to our rule as long as we have an agent to pick it up. Alternatively, we can also use the set the ```--cron``` parameter during deployment.
+```
+prefect deployment build parameterized_flow.py:etl_parent_flow -n etl2 --cron "0 0 * * *" -a
+```
+
+The result of the command above is shown in the figure below ("At 12:00 AM every day").
+
+![](./img/schedule3.png)
+
+### How to run our workflows in Docker containers?
+
+**Step1:** we can use Docker images to make our workflows production-ready. First, we write a Dockerfile for our workflow, then login to DockerHub, create an image repository, and finally push the image. In the commands, change "padilha" to your [DockerHub](https://hub.docker.com/) username.
+
+```
+docker image build --no-cache -t padilha/prefect:zoom .
+
+docker login
+
+docker image push padilha/prefect:zoom
+```
+
+**Step 2:** we need to create a Docker infrastructure block. In this step, I created a block named "zoom" and set the values of "Image", "ImagePullPolicy" and "Auto Remove".
+
+![](./img/docker_block1.png)
+
+![](./img/docker_block2.png)
+
+It is also possible to create blocks using Python code. See [blocks](./blocks/) for some examples presented in the course.
+
+**Step 3:** create deployment. This time, we deploy our container using Python code, see [docker_deploy.py](./docker_deploy.py).
+
+```
+python docker_deploy.py
+
+prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
+
+prefect agent start -q default
+
+prefect deployment run etl-parent-flow/docker-flow -p "months=[1,2]"
+```
+
+Then, we can see the result in our GCS Bucket.
+
+![](./img/docker_deploy_result.png)
+
+**Problems during Step 3:** I had two different types of problems, which took me some time to find the solution. I list them and their solutions below.
+
+**Problem #1:**
+
+    ...
+    ValueError: Path /home/padilha/.prefect/storage/c3ec11659da6459f8cfafe36de0bcaab does not exist.
+
+    Finished in state Failed('Flow run encountered an exception. ValueError: Path /home/padilha/.prefect/storage/c3ec11659da6459f8cfafe36de0bcaab does not exist.\n')
+
+For some reason, the above exception has something to do with the task caching parameters that we set in the function ```fetch``` in [parameterized_flow.py](./parameterized_flow.py). The easiest solution to this problem is to remove ```cache_key_fn``` and ```cache_expiration``` parameters. See this [thread in Slack](https://datatalks-club.slack.com/archives/C01FABYF2RG/p1674823816614039) and this [issue in GitHub](https://github.com/PrefectHQ/prefect/issues/6086).
+
+**Problem #2:**
+
+    ...
+    pydantic.error_wrappers.ValidationError: 1 validation error for GcsBucket gcp_credentials -> service_account_file
+    The provided path to the service account is invalid (type=value_error)
+
+    The above exception was the direct cause of the following exception:
+    ...
+    RuntimeError: Unable to load 'zoomcamp-gcs' of block type None due to failed validation. To load without validation, try loading again with `validate=False`.
+
+In my implementation, when creating the GCS Bucket block, I used a "Service Account File" to set the value of the GCP Credentials block. Then, the JSON file cannot be found by Prefect inside the Docker container. To circumvent this problem, we can just edit our GCP Credentials block and paste the content of our Service Account File as a secret dictionary ("Service Account Info") in the block. See this [thread in Slack](https://datatalks-club.slack.com/archives/C01FABYF2RG/p1674761874766169).
 
 ## [DE Zoomcamp 2.2.7 - Prefect Cloud/Additional resources](https://www.youtube.com/watch?v=gGC23ZK7lr8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=23)
 
