@@ -8,6 +8,7 @@
 * [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](#de-zoomcamp-225---parametrizing-flow--deployments-with-etl-into-gcs-flow)
 * [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](#de-zoomcamp-226---schedules--docker-storage-with-infrastructure)
 * [DE Zoomcamp 2.2.7 - Prefect Cloud/Additional resources](#de-zoomcamp-227---prefect-cloudadditional-resources)
+* [Learning in public (LinkedIn)](https://www.linkedin.com/posts/victor-padilha_dataengineering-dataanalytics-dezoomcamp-activity-7025805775897796608-m_J9?utm_source=share&utm_medium=member_desktop)
 
 ## [DE Zoomcamp 2.1.1 - Data Lake](https://www.youtube.com/watch?v=W3Zm6rjOq70&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
