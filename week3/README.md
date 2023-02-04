@@ -1,6 +1,7 @@
 ## Week 3 Overview
 
 * [DE Zoomcamp 3.1.1 - Data Warehouse and BigQuery](#de-zoomcamp-311---data-warehouse-and-bigquery)
+* [DE Zoomcamp 3.1.2 - Partioning and Clustering](#de-zoomcamp-312---partioning-and-clustering)
 
 ## [DE Zoomcamp 3.1.1 - Data Warehouse and BigQuery](https://www.youtube.com/watch?v=jrHljAoD6nM)
 
@@ -150,3 +151,15 @@ AND PULocationID = 132;
 ![](./img/results_clustered.png)
 
 We achieved ~8% of improvement in this example. As the dataset grows, this difference becomes more evident.
+
+## [DE Zoomcamp 3.1.2 - Partioning and Clustering](https://www.youtube.com/watch?v=-CqXf7vhhDs)
+
+**BigQuery Partitioning:** we can partition data by a time-unit column, ingestion time (_PARTITIONTIME) or an integer range partitioning. When partitioning data, to achieve its full potential, we would prefer evenly distributed partitions. In addition, we must take into account the number of partitions that we will need. BigQuery limits the number of partitions to 4000.
+
+**BigQuery Clustering:** when clustering, a maximum of four columns can be used and the order they are specified is important to determine how the data will be sorted. Clustering improves filtering and aggregation queries and typically doesn't show much improvement for tables with less than 1 GB of data.
+
+The instructor shows this nice comparison between Partitioning and Clustering:
+
+![](./img/partitioning_vs_clustering.png)
+
+**When to use Clustering over Partitioning?** It is usually better to using Clustering when: partitioning creates small partitions (e.g., each partition < 1 GB), partitionining generates more than 4000 partitions, or we need to update/modify data in the majority of partitions on a frequent basis.
