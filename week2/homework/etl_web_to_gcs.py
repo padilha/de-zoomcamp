@@ -29,7 +29,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 @task()
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     """Write DataFrame out locally as parquet file"""
-    path = Path(f"data/{color}/{dataset_file}.parquet")
+    path = Path(f"/home/padilha/projects/de-zoomcamp/data/{color}/{dataset_file}.parquet")
     df.to_parquet(path, compression="gzip")
     return path
 
@@ -47,7 +47,7 @@ def etl_web_to_gcs() -> None:
     """The main ETL function"""
     color = "green"
     year = 2020
-    month = 1
+    month = 11
     dataset_file = f"{color}_tripdata_{year}-{month:02}"
     dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
 
