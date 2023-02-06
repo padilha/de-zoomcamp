@@ -16,7 +16,7 @@ How many rows does that dataset have?
 
 ### Solution
 
-After making minor changes for the script to work for green taxi data, this is the output we have:
+After making minor changes for the script to work for green taxi data, we have this output:
 
     18:59:08.489 | INFO    | prefect.engine - Created flow run 'fantastic-starling' for flow 'etl-web-to-gcs'
     18:59:08.647 | INFO    | Flow run 'fantastic-starling' - Created task run 'fetch-b4598a4a-0' for task 'fetch'
