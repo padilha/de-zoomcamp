@@ -66,6 +66,8 @@ After making minor changes for the script to work for green taxi data, we have t
 
 We have the output: `18:59:09.723 | INFO    | Task run 'clean-b9fd7e03-0' - rows: 447770`.
 
+**Answer:** 447,770
+
 
 ## Question 2. Scheduling with Cron
 
@@ -89,6 +91,8 @@ prefect deployment apply etl_web_to_gcs-deployment.yaml
 Then, in Orion's interface we can go to Deployments and edit the schedule of Week2HomeworkQ2. The first option (`0 5 1 * *`) is the correct cron expression.
 
 ![](../img/homework_Q2.png)
+
+**Answer:** `0 5 1 * *`
 
 
 ## Question 3. Loading data to BigQuery 
@@ -160,6 +164,8 @@ Then, we have the following output:
     21:48:36.894 | INFO    | prefect.infrastructure.process - Process 'bizarre-squirrel' exited cleanly.
 
 We can see the final result in `21:48:36.498 | INFO    | Flow run 'bizarre-squirrel' - Processed rows (total): 14851920`.
+
+**Answer:** 14,851,920
 
 
 ## Question 4. Github Storage Block
@@ -242,6 +248,8 @@ And we get the output below:
 
 The result is in line `22:32:38.307 | INFO    | Task run 'clean-2c6af9f6-0' - rows: 88605`.
 
+**Answer:** 88,605
+
 
 ## Question 5. Email or Slack notifications
 
@@ -273,7 +281,91 @@ How many rows were processed by the script?
 
 ### Solution
 
-TO DO
+**Step 1:** sign in to app.prefect.cloud and create an API key.
+
+**Step 2:** sign in from terminal.
+```
+prefect cloud login -k your-api-key-here
+```
+
+**Step 3:** build and deploy the workflow.
+```
+prefect deployment build ./etl_web_to_gcs.py:etl_web_to_gcs -n "Prefect Cloud Flow" --apply
+```
+
+**Step 4:** create an e-mail block.
+
+![](../img/homework_Q5_1.png)
+
+Then, in app.prefect.cloud select "Automations > Add Automation +".
+
+![](../img/homework_Q5_2.png)
+
+![](../img/homework_Q5_3.png)
+
+**Step 5:** run the deployed workflow.
+```
+prefect deployment run "etl-web-to-gcs/Prefect Cloud Flow"
+prefect agent start --work-queue "default"
+```
+
+Output:
+
+    Agent started! Looking for work from queue(s): default...
+    09:59:27.087 | INFO    | prefect.agent - Submitting flow run '91ab8db6-c1de-46b1-9f03-7f8767bac682'
+    09:59:28.008 | INFO    | prefect.infrastructure.process - Opening process 'bulky-moose'...
+    09:59:28.216 | INFO    | prefect.agent - Completed submission of flow run '91ab8db6-c1de-46b1-9f03-7f8767bac682'
+    /home/padilha/miniconda3/envs/de-zoomcamp-week2/lib/python3.9/runpy.py:127: RuntimeWarning: 'prefect.engine' found in sys.modules after import of package 'prefect', but prior to execution of 'prefect.engine'; this may result in unpredictable behaviour
+    warn(RuntimeWarning(msg))
+    09:59:31.962 | INFO    | Flow run 'bulky-moose' - Downloading flow code from storage at '/home/padilha/projects/de-zoomcamp/week2/homework'
+    09:59:33.946 | INFO    | Flow run 'bulky-moose' - Created task run 'fetch-ba00c645-0' for task 'fetch'
+    09:59:33.947 | INFO    | Flow run 'bulky-moose' - Executing 'fetch-ba00c645-0' immediately...
+    09:59:39.783 | INFO    | Task run 'fetch-ba00c645-0' - Finished in state Completed()
+    09:59:39.978 | INFO    | Flow run 'bulky-moose' - Created task run 'clean-2c6af9f6-0' for task 'clean'
+    09:59:39.979 | INFO    | Flow run 'bulky-moose' - Executing 'clean-2c6af9f6-0' immediately...
+    09:59:40.919 | INFO    | Task run 'clean-2c6af9f6-0' -    VendorID lpep_pickup_datetime  ... trip_type congestion_surcharge
+    0         2  2019-04-01 00:18:40  ...         1                 2.75
+    1         2  2019-04-01 00:18:24  ...         1                 0.00
+
+    [2 rows x 20 columns]
+    09:59:40.921 | INFO    | Task run 'clean-2c6af9f6-0' - columns: VendorID                          int64
+    lpep_pickup_datetime     datetime64[ns]
+    lpep_dropoff_datetime    datetime64[ns]
+    store_and_fwd_flag               object
+    RatecodeID                        int64
+    PULocationID                      int64
+    DOLocationID                      int64
+    passenger_count                   int64
+    trip_distance                   float64
+    fare_amount                     float64
+    extra                           float64
+    mta_tax                         float64
+    tip_amount                      float64
+    tolls_amount                    float64
+    ehail_fee                       float64
+    improvement_surcharge           float64
+    total_amount                    float64
+    payment_type                      int64
+    trip_type                         int64
+    congestion_surcharge            float64
+    dtype: object
+    09:59:40.923 | INFO    | Task run 'clean-2c6af9f6-0' - rows: 514392
+    09:59:41.098 | INFO    | Task run 'clean-2c6af9f6-0' - Finished in state Completed()
+    09:59:41.099 | INFO    | Flow run 'bulky-moose' - Processed rows: 514392
+    09:59:41.329 | INFO    | Flow run 'bulky-moose' - Created task run 'write_local-09e9d2b8-0' for task 'write_local'
+    09:59:41.331 | INFO    | Flow run 'bulky-moose' - Executing 'write_local-09e9d2b8-0' immediately...
+    09:59:44.698 | INFO    | Task run 'write_local-09e9d2b8-0' - Finished in state Completed()
+    09:59:44.987 | INFO    | Flow run 'bulky-moose' - Created task run 'write_gcs-67f8f48e-0' for task 'write_gcs'
+    09:59:44.988 | INFO    | Flow run 'bulky-moose' - Executing 'write_gcs-67f8f48e-0' immediately...
+    09:59:45.909 | INFO    | Flow run 'bulky-moose' - Traceback (most recent call last):
+
+We have the result in `09:59:40.923 | INFO    | Task run 'clean-2c6af9f6-0' - rows: 514392`
+
+The workflow raises an exception because it cannot find a GCS block named zoomcamp-gcs. When I checked my e-mail, I got Prefect's notification:
+
+![](../img/homework_Q5_4.png)
+
+**Answer:** 514,392
 
 
 ## Question 6. Secrets
@@ -290,6 +382,8 @@ Prefect Secret blocks provide secure, encrypted storage in the database and obfu
 I created a Database Credentials block in Orion. When I visualize the block, there are 8 asterisks.
 
 ![](../img/homework_Q6.png)
+
+**Answer:** 8
 
 
 ## Submitting the solutions
