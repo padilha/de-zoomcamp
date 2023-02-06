@@ -179,7 +179,68 @@ How many rows were processed by the script?
 
 ### Solution
 
-TO DO
+From the root directory of this repo run:
+```
+prefect deployment build ./week2/homework/etl_web_to_gcs.py:etl_web_to_gcs -n "GitHub Storage Flow" -sb github/week2q4 -o ./week2/homework/etl_web_to_gcs_github-deployment.yaml --apply
+prefect deployment run "etl-web-to-gcs/GitHub Storage Flow"
+prefect agent start -q 'default'
+```
+
+And we get the output below:
+
+    22:32:33.555 | INFO    | prefect.agent - Submitting flow run '85bca7d3-4a7f-4bc8-bee9-a762edf238e9'
+    22:32:33.651 | INFO    | prefect.infrastructure.process - Opening process 'colorful-bee'...
+    22:32:33.672 | INFO    | prefect.agent - Completed submission of flow run '85bca7d3-4a7f-4bc8-bee9-a762edf238e9'
+    /home/padilha/miniconda3/envs/de-zoomcamp-week2/lib/python3.9/runpy.py:127: RuntimeWarning: 'prefect.engine' found in sys.modules after import of package 'prefect', but prior to execution of 'prefect.engine'; this may result in unpredictable behaviour
+    warn(RuntimeWarning(msg))
+    22:32:34.749 | INFO    | Flow run 'colorful-bee' - Downloading flow code from storage at ''
+    22:32:36.018 | INFO    | Flow run 'colorful-bee' - Created task run 'fetch-ba00c645-0' for task 'fetch'
+    22:32:36.019 | INFO    | Flow run 'colorful-bee' - Executing 'fetch-ba00c645-0' immediately...
+    week2/homework/etl_web_to_gcs.py:14: DtypeWarning: Columns (3) have mixed types. Specify dtype option on import or set low_memory=False.
+    df = pd.read_csv(dataset_url)
+    22:32:38.152 | INFO    | Task run 'fetch-ba00c645-0' - Finished in state Completed()
+    22:32:38.200 | INFO    | Flow run 'colorful-bee' - Created task run 'clean-2c6af9f6-0' for task 'clean'
+    22:32:38.201 | INFO    | Flow run 'colorful-bee' - Executing 'clean-2c6af9f6-0' immediately...
+    22:32:38.305 | INFO    | Task run 'clean-2c6af9f6-0' -    VendorID lpep_pickup_datetime  ... trip_type congestion_surcharge
+    0       2.0  2020-11-01 00:08:23  ...       1.0                 2.75
+    1       2.0  2020-11-01 00:23:32  ...       1.0                 0.00
+
+    [2 rows x 20 columns]
+    22:32:38.306 | INFO    | Task run 'clean-2c6af9f6-0' - columns: VendorID                        float64
+    lpep_pickup_datetime     datetime64[ns]
+    lpep_dropoff_datetime    datetime64[ns]
+    store_and_fwd_flag               object
+    RatecodeID                      float64
+    PULocationID                      int64
+    DOLocationID                      int64
+    passenger_count                 float64
+    trip_distance                   float64
+    fare_amount                     float64
+    extra                           float64
+    mta_tax                         float64
+    tip_amount                      float64
+    tolls_amount                    float64
+    ehail_fee                       float64
+    improvement_surcharge           float64
+    total_amount                    float64
+    payment_type                    float64
+    trip_type                       float64
+    congestion_surcharge            float64
+    dtype: object
+    22:32:38.307 | INFO    | Task run 'clean-2c6af9f6-0' - rows: 88605
+    22:32:38.321 | INFO    | Task run 'clean-2c6af9f6-0' - Finished in state Completed()
+    22:32:38.337 | INFO    | Flow run 'colorful-bee' - Created task run 'write_local-09e9d2b8-0' for task 'write_local'
+    22:32:38.338 | INFO    | Flow run 'colorful-bee' - Executing 'write_local-09e9d2b8-0' immediately...
+    22:32:38.571 | INFO    | Task run 'write_local-09e9d2b8-0' - Finished in state Completed()
+    22:32:38.600 | INFO    | Flow run 'colorful-bee' - Created task run 'write_gcs-67f8f48e-0' for task 'write_gcs'
+    22:32:38.602 | INFO    | Flow run 'colorful-bee' - Executing 'write_gcs-67f8f48e-0' immediately...
+    22:32:38.708 | INFO    | Task run 'write_gcs-67f8f48e-0' - Getting bucket 'dtc_data_lake_dtc-de-375514'.
+    22:32:39.897 | INFO    | Task run 'write_gcs-67f8f48e-0' - Uploading from PosixPath('/home/padilha/projects/de-zoomcamp/data/green/green_tripdata_2020-11.parquet') to the bucket 'dtc_data_lake_dtc-de-375514' path '/home/padilha/projects/de-zoomcamp/data/green/green_tripdata_2020-11.parquet'.
+    22:32:41.976 | INFO    | Task run 'write_gcs-67f8f48e-0' - Finished in state Completed()
+    22:32:42.018 | INFO    | Flow run 'colorful-bee' - Finished in state Completed('All states completed.')
+    22:32:42.246 | INFO    | prefect.infrastructure.process - Process 'colorful-bee' exited cleanly.
+
+The result is in line `22:32:38.307 | INFO    | Task run 'clean-2c6af9f6-0' - rows: 88605`.
 
 
 ## Question 5. Email or Slack notifications
