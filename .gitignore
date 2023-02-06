@@ -1,4 +1,7 @@
 **/.terraform
 **/.terraform.lock.hcl
 **/terraform.tfstate
+**/__pycache__
+**/.ipynb_checkpoints/
 dtc-de-375514-849c13503247.json
+week2/data
