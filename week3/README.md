@@ -3,6 +3,7 @@
 * [DE Zoomcamp 3.1.1 - Data Warehouse and BigQuery](#de-zoomcamp-311---data-warehouse-and-bigquery)
 * [DE Zoomcamp 3.1.2 - Partioning and Clustering](#de-zoomcamp-312---partioning-and-clustering)
 * [DE Zoomcamp 3.2.1 - BigQuery Best Practices](#de-zoomcamp-321---bigquery-best-practices)
+* [DE Zoomcamp 3.2.2 - Internals of Big Query](#de-zoomcamp-322---internals-of-big-query)
 
 ## [DE Zoomcamp 3.1.1 - Data Warehouse and BigQuery](https://www.youtube.com/watch?v=jrHljAoD6nM)
 
@@ -167,3 +168,23 @@ The instructor shows this nice comparison between Partitioning and Clustering:
 
 ## [DE Zoomcamp 3.2.1 - BigQuery Best Practices](https://www.youtube.com/watch?v=k81mLJVX08w)
 
+**Cost reduction:**
+* Avoid `SELECT *`. It is much better to specify a particular subset of columns to reduce the amount of scanned data.
+* Price queries before running them.
+* Use clustered or partitioned tables to optimize the number of scanned records.
+* Use streaming inserts with caution, because they could drastically increase the costs.
+* Materialize query results in different stages.
+
+**Query performance:**
+* Always filter data using partitioned or clustered columns.
+* Use denormalized data that facilitate analytical queries.
+* Excess usage of external storage might incur in more costs.
+* Reduce data before performing a join operation.
+* Order statements must be last part of the query to optimize performance.
+* In the queries, as a best practice, place the table with the largest number of rows first, followed by the table with the fewest rows, and then place the remaining tables by decreasing sizes.
+
+## [DE Zoomcamp 3.2.2 - Internals of Big Query](https://www.youtube.com/watch?v=eduHi1inM4s)
+
+**Colossus:** Google's distributed file storage that stores data in a columnar format.
+
+****
