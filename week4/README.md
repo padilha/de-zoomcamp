@@ -165,4 +165,7 @@ dbt run --select stg_green_tripdata.sql --var 'is_test_run: false'
 
 ### dbt seeds
 
-Dbt seeds are meant to be used with CSV files that contain data that will rarely be changed. In our example, we use the [taxi_lookup_table.csv]()
+Dbt seeds are meant to be used with CSV files that contain data that will rarely be changed. In our example, we copy the content of [taxi_zone_lookup.csv](https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/misc) and paste it in a file in the seeds directory. Then, we run `dbt seed` on the command line to create this table in our database.
+
+![](./img/taxi_zone_lookup.png)
+
