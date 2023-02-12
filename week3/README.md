@@ -5,6 +5,7 @@
 * [DE Zoomcamp 3.2.1 - BigQuery Best Practices](#de-zoomcamp-321---bigquery-best-practices)
 * [DE Zoomcamp 3.2.2 - Internals of Big Query](#de-zoomcamp-322---internals-of-big-query)
 * [DE Zoomcamp 3.3.1 - BigQuery Machine Learning](#de-zoomcamp-331---bigquery-machine-learning)
+* [Learning in public (LinkedIn)](https://www.linkedin.com/posts/victor-padilha_dataengineering-datascience-dataanalytics-activity-7028696600839434240-Tmd2?utm_source=share&utm_medium=member_desktop)
 
 ## [DE Zoomcamp 3.1.1 - Data Warehouse and BigQuery](https://www.youtube.com/watch?v=jrHljAoD6nM)
 
