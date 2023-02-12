@@ -75,10 +75,6 @@ For more details on sources, see [this link](https://docs.getdbt.com/docs/build/
 
 **Seeds** are csv files stored in our seed directory inside the project, which allows us to effectively version control them. Seeds are recommended for datasets that have infrequent updates.
 
-write schema.yml and stg_green_data.sql under taxi_rides_ny/models/staging
-
-if problems with location see [FAQ](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit#) When running your first dbt model, if it fails with an error: 404 Not found: Dataset was not found in location US
-
 ### The FROM clause: ref macro
 
 The `ref()` macro makes it possible for us to reference tables and views that were created from dbt models or dbt seeds. `ref()` resolves the correct schemas and any dependencies. We can use it as follows:
@@ -92,6 +88,8 @@ See [stg_green_tripdata.sql](). We can run such a model with the command below.
 ```
 dbt run --select stg_green_tripdata
 ```
+
+Note: if you have problems with location, see the course [FAQ](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit#) and search for "404 Not found: Dataset was not found in location US".
 
 In [stg_green_tripdata.sql](), we can see the following line:
 ```sql
@@ -130,3 +128,41 @@ select
     ...
 ```
 Note how the macro call was substituted by its code in our SQL statement.
+
+### Packages
+
+Packages are standalone dbt projects that define models and macros for specific types of problems. Thus, similar to what happens in programming languages, we can reuse other packages' models and macros in our own projects.
+
+Packages are imported using a packages.yml file in the root directory of our project. In our example, we are going to use the `dbt-labs/dbt_utils` package.
+```yml
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 0.8.0
+```
+Next, we run `dbt deps` in our terminal, which downloads the package dependencies for our project.
+
+For example, we can create a [surrogate key](https://docs.getdbt.com/terms/surrogate-key) for the `vendorid` and `lpep_pickup_datetime` in our model in this way (see [stg_green_tripdata.sql]()):
+```sql
+{{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime']) }} as tripid,
+```
+
+### Defining variables
+
+Variables have the same concepts as in programming languages. With a macro, dbt allows us to define variables when compiling models. Variable values can be defined either on the command line or in the dbt_project.yml file.
+
+For instance, we can define a variable `is_test_run` in [stg_green_tripdata.sql]():
+```sql
+{% if var('is_test_run', default=true) %}
+
+  limit 100
+
+{% endif %}
+```
+Now, we can run the model and change the value of `is_test_run` using the command:
+```
+dbt run --select stg_green_tripdata.sql --var 'is_test_run: false'
+```
+
+### dbt seeds
+
+Dbt seeds are meant to be used with CSV files that contain data that will rarely be changed. In our example, we use the [taxi_lookup_table.csv]()
