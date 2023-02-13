@@ -4,6 +4,7 @@
 * [DE Zoomcamp 4.1.2 - What is dbt](#de-zoomcamp-412---what-is-dbt)
 * [DE Zoomcamp 4.2.1 - Start Your dbt Project: BigQuery and dbt Cloud](#de-zoomcamp-421---start-your-dbt-project-bigquery-and-dbt-cloud)
 * [DE Zoomcamp 4.3.1 - Build the First dbt Models](#de-zoomcamp-431---build-the-first-dbt-models)
+* [DE Zoomcamp 4.3.2 - Testing and Documenting the Project](#de-zoomcamp-432---testing-and-documenting-the-project)
 
 ## [DE Zoomcamp 4.1.1 - Analytics Engineering Basics](https://www.youtube.com/watch?v=uF76d5EmdtU&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=33)
 
@@ -165,7 +166,38 @@ dbt run --select stg_green_tripdata.sql --var 'is_test_run: false'
 
 ### dbt seeds
 
-Dbt seeds are meant to be used with CSV files that contain data that will rarely be changed. In our example, we copy the content of [taxi_zone_lookup.csv](https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/misc) and paste it in a file in the seeds directory. Then, we run `dbt seed` on the command line to create this table in our database.
+Dbt seeds are meant to be used with CSV files that contain data that will not be changed often. In our example, we copy the content of [taxi_zone_lookup.csv](https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/misc) and paste it in a file in the seeds directory. Then, we run `dbt seed` on the command line to create this table in our database.
 
 ![](./img/taxi_zone_lookup.png)
 
+Next, we create the [dim_zones.sql]() model (i.e., a [dimension table](#de-zoomcamp-411---analytics-engineering-basics)):
+```sql
+{{ config(materialized='table') }}
+
+select 
+    locationid, 
+    borough, 
+    zone, 
+    replace(service_zone,'Boro','Green') as service_zone
+from {{ ref('taxi_zone_lookup') }}
+```
+
+See how we used `ref()` to refer our table created by a dbt seed.
+
+### Unioning our models in fact_trips and understanding dependencies
+
+Finally, we write our fact table described by the model [fact_trips.sql]() and we can visualize the data lineage.
+
+![](./img/lineage.png)
+
+To build all models and seeds we run `dbt build`.
+
+## [DE Zoomcamp 4.3.2 - Testing and Documenting the Project](https://www.youtube.com/watch?v=UishFmq1hLM&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=36)
+
+### Tests
+
+TO DO
+
+### Documentation
+
+TO DO
