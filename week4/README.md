@@ -196,8 +196,21 @@ To build all models and seeds we run `dbt build`.
 
 ### Tests
 
-TO DO
+Tests are assumptions (e.g., a behavior) that we make about our data. In dbt, we write tests as `SELECT` queries, which get compiled as SQL queries that return to us the number of failing records. In other words, a test returns to us the number of records that violate the assumptions that we made. Tests are defined in the project yml file.
+
+We can write custom tests, use basic tests that are available by dbt or tests provided by dbt packages.
+
+We can see how tests are defined on [](). For example, if we want to test the tripid column for uniqueness and not null values:
+```yml
+tests:
+  - unique:
+      severity: warn
+  - not_null:
+      severity: warn
+```
+
+Where the severity can be either `warn` or `error`. In the former case, dbt will warn us about any failures and keep running. In the latter, dbt will raise an error and stop the execution.
 
 ### Documentation
 
-TO DO
+It is possible to generate documentation that gets rendered as a website and can be hosted in dbt cloud. The documentation includes information about our project (models, dependencies, sources, etc) and about our data warehouse (column names, data types, etc).
