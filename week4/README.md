@@ -5,6 +5,8 @@
 * [DE Zoomcamp 4.2.1 - Start Your dbt Project: BigQuery and dbt Cloud](#de-zoomcamp-421---start-your-dbt-project-bigquery-and-dbt-cloud)
 * [DE Zoomcamp 4.3.1 - Build the First dbt Models](#de-zoomcamp-431---build-the-first-dbt-models)
 * [DE Zoomcamp 4.3.2 - Testing and Documenting the Project](#de-zoomcamp-432---testing-and-documenting-the-project)
+* [DE Zoomcamp 4.4.1 - Deployment Using dbt Cloud](#de-zoomcamp-441---deployment-using-dbt-cloud)
+* [DE Zoomcamp 4.5.1 - Visualising the data with Google Data Studio](#de-zoomcamp-451---visualising-the-data-with-google-data-studio)
 
 ## [DE Zoomcamp 4.1.1 - Analytics Engineering Basics](https://www.youtube.com/watch?v=uF76d5EmdtU&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=33)
 
@@ -85,18 +87,18 @@ FROM {{ ref('stg_green_tripdata') }}
 
 ### Building dbt models
 
-See [stg_green_tripdata.sql](). We can run such a model with the command below.
+See [stg_green_tripdata.sql](./taxi_rides_ny/models/staging/stg_green_tripdata.sql). We can run such a model with the command below.
 ```
 dbt run --select stg_green_tripdata
 ```
 
 Note: if you have problems with location, see the course [FAQ](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit#) and search for "404 Not found: Dataset was not found in location US".
 
-In [stg_green_tripdata.sql](), we can see the following line:
+In [stg_green_tripdata.sql](./taxi_rides_ny/models/staging/stg_green_tripdata.sql), we can see the following line:
 ```sql
 {{ get_payment_type_description('payment_type') }} as payment_type_description,
 ```
-`get_payment_type_description` consists of a macro that gives us a description of our payment type in plain English. This macro is defined as (see [get_payment_type_description.sql]()):
+`get_payment_type_description` consists of a macro that gives us a description of our payment type in plain English. This macro is defined as (see [get_payment_type_description.sql](./taxi_rides_ny/macros/get_payment_type_description.sql)):
 ```sql
 {% macro get_payment_type_description(payment_type) -%}
 
@@ -142,7 +144,7 @@ packages:
 ```
 Next, we run `dbt deps` in our terminal, which downloads the package dependencies for our project.
 
-For example, we can create a [surrogate key](https://docs.getdbt.com/terms/surrogate-key) for the `vendorid` and `lpep_pickup_datetime` in our model in this way (see [stg_green_tripdata.sql]()):
+For example, we can create a [surrogate key](https://docs.getdbt.com/terms/surrogate-key) for the `vendorid` and `lpep_pickup_datetime` in our model in this way (see [stg_green_tripdata.sql](./taxi_rides_ny/models/staging/stg_green_tripdata.sql)):
 ```sql
 {{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime']) }} as tripid,
 ```
@@ -151,7 +153,7 @@ For example, we can create a [surrogate key](https://docs.getdbt.com/terms/surro
 
 Variables have the same concepts as in programming languages. With a macro, dbt allows us to define variables when compiling models. Variable values can be defined either on the command line or in the dbt_project.yml file.
 
-For instance, we can define a variable `is_test_run` in [stg_green_tripdata.sql]():
+For instance, we can define a variable `is_test_run` in [stg_green_tripdata.sql](./taxi_rides_ny/models/staging/stg_green_tripdata.sql):
 ```sql
 {% if var('is_test_run', default=true) %}
 
@@ -170,7 +172,7 @@ Dbt seeds are meant to be used with CSV files that contain data that will not be
 
 ![](./img/taxi_zone_lookup.png)
 
-Next, we create the [dim_zones.sql]() model (i.e., a [dimension table](#de-zoomcamp-411---analytics-engineering-basics)):
+Next, we create the [dim_zones.sql](./taxi_rides_ny/models/core/dim_zones.sql) model (i.e., a [dimension table](#de-zoomcamp-411---analytics-engineering-basics)):
 ```sql
 {{ config(materialized='table') }}
 
@@ -186,7 +188,7 @@ See how we used `ref()` to refer our table created by a dbt seed.
 
 ### Unioning our models in fact_trips and understanding dependencies
 
-Finally, we write our fact table described by the model [fact_trips.sql]() and we can visualize the data lineage.
+Finally, we write our fact table described by the model [fact_trips.sql](./taxi_rides_ny/models/core/fact_trips.sql) and we can visualize the data lineage.
 
 ![](./img/lineage.png)
 
@@ -200,17 +202,52 @@ Tests are assumptions (e.g., a behavior) that we make about our data. In dbt, we
 
 We can write custom tests, use basic tests that are available by dbt or tests provided by dbt packages.
 
-We can see how tests are defined on [](). For example, if we want to test the tripid column for uniqueness and not null values:
+We can see how tests are defined on [staging/schema.yml](./taxi_rides_ny/models/staging/schema.yml). For example, if we want to test the tripid column for uniqueness and not null values:
 ```yml
-tests:
-  - unique:
-      severity: warn
-  - not_null:
-      severity: warn
+columns:
+  - name: tripid
+    description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
+    tests:
+        - unique:
+            severity: warn
+        - not_null:
+            severity: warn
 ```
 
 Where the severity can be either `warn` or `error`. In the former case, dbt will warn us about any failures and keep running. In the latter, dbt will raise an error and stop the execution.
 
+We can run all tests through the command `dbt test` or we can select a particular model through `dbt test --select <model_name>`.
+
 ### Documentation
 
 It is possible to generate documentation that gets rendered as a website and can be hosted in dbt cloud. The documentation includes information about our project (models, dependencies, sources, etc) and about our data warehouse (column names, data types, etc).
+
+## [DE Zoomcamp 4.4.1 - Deployment Using dbt Cloud](https://www.youtube.com/watch?v=rjf6yZNGX8I&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=37)
+
+Deployment consists of running in a production environment the models we created in our development environment. By separating the development and deployment environments, we can create and deliver models continually without affecting the models that are already in production.
+
+**Continuous Integration (CI)** is the practice of regularly merging development branches into a central repository. Ideally, these merging processes also include automated builds and tests. Dbt can be easily integrated with GitHub or GitLab, to receive webhooks when a pull request is ready to be merged. Then, the webhook that is received will enqueue a new run of the specified job. No pull request is able to be merged unless the run finishes successfully.
+
+**Step 1:** create a production environment on Deploy -> Environments.
+
+![](./img/dbt_prod_env.png)
+
+**Step 2:** create a job on Deploy -> Jobs
+
+![](./img/dbt_job1.png)
+
+![](./img/dbt_job2.png)
+
+![](./img/dbt_job3.png)
+
+**Step 3:** run the job and get an output like this:
+
+![](./img/dbt_job4.png)
+
+We can also take a look at our artifacts and access our docs (by clicking on "View documentation").
+
+![](./img/artifacts.png)
+
+## [DE Zoomcamp 4.5.1 - Visualising the data with Google Data Studio](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=43)
+
+TO DO
