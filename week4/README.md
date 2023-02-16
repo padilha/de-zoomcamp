@@ -250,4 +250,28 @@ We can also take a look at our artifacts and access our docs (by clicking on "Vi
 
 ## [DE Zoomcamp 4.5.1 - Visualising the data with Google Data Studio](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=43)
 
-TO DO
+**Step 1:** open [Google Data Studio](https://lookerstudio.google.com/).
+
+**Step 2:** create a BigQuery data source (it may be necessary to authorize Google Data Studio to access BigQuery), select our production table and click on connect.
+
+![](./img/data_source.png)
+
+![](./img/bigquery.png)
+
+![](./img/select_table.png)
+
+**Step 3:** in the next screen, we can see that the tool already suggests some aggregations for us. In this example, we set all of them to None, except for `passenger_count`, for which we keep the "Sum" aggregation.
+
+**Step 4:** let's start by creating a simple time series chart including `service_type` as the breakdown dimension.
+
+![](./img/ts_chart.png)
+
+**Step 5:** it is possible to observe some outliers among the dates (note that the date range goes up to the year 2078). So, let's add a date range control and set the date interval between Jan 1st, 2019 and Dec, 31st 2020.
+
+![](./img/control_menu.png)
+
+![](./img/ts_chart_2019_2020.png)
+
+**Step 6:** create some additional charts...
+
+![](./img/charts.png)
