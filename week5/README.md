@@ -3,6 +3,7 @@
 * [DE Zoomcamp 5.1.1 - Introduction to Batch processing](#de-zoomcamp-511---introduction-to-batch-processing)
 * [DE Zoomcamp 5.1.2 - Introduction to Spark](#de-zoomcamp-512---introduction-to-spark)
 * [DE Zoomcamp 5.3.1 - First Look at Spark/PySpark](#de-zoomcamp-531---first-look-at-sparkpyspark)
+* [DE Zoomcamp 5.3.2 - Spark DataFrames](#de-zoomcamp-532---spark-dataframes)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -119,3 +120,68 @@ Then, if we list the output directory, we should get an output similar to this o
     part-00022-d7d0e901-04fe-46b9-95a6-aea2a107e8e1-c000.snappy.parquet
     part-00023-d7d0e901-04fe-46b9-95a6-aea2a107e8e1-c000.snappy.parquet
     _SUCCESS
+
+## [DE Zoomcamp 5.3.2 - Spark DataFrames](https://www.youtube.com/watch?v=ti3aC1m3rE8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+We start by reading the parquet data that we saved in the end of the last lesson.
+```python
+df = spark.read.parquet('fhvhv/2021/01/')
+```
+
+We can print the schema, which is also contained in the files and is interpreted by Spark, using `df.printSchema()` and get the output below.
+
+    root
+    |-- hvfhs_license_num: string (nullable = true)
+    |-- dispatching_base_num: string (nullable = true)
+    |-- pickup_datetime: timestamp (nullable = true)
+    |-- dropoff_datetime: timestamp (nullable = true)
+    |-- PULocationID: integer (nullable = true)
+    |-- DOLocationID: integer (nullable = true)
+    |-- SR_Flag: integer (nullable = true)
+
+Next, we can use the `select()` and `filter()` methods to execute simple queries on our DataFrame.
+```python
+df.select('pickup_datetime', 'dropoff_datetime', 'PULocationID', 'DOLocationID') \
+    .filter(df.hvfhs_license_num == 'HV0003')
+```
+In the code above we selected 4 columns where `hvfhs_license_num` is equal to 'HV0003'.
+
+### Actions vs. Transformations
+
+In Spark, we have a distinction between Actions (code that is executed immediately) and Transformations (code that is lazy, i.e., not executed immediately).
+
+Examples of Transformations are: selecting columns, data filtering, joins and groupby operations. In these cases, Spark creates a sequence of transformations that is executed only when we call some method like `show()`, which is an example of an Action.
+
+Examples of Actions are: `show()`, `take()`, `head()`, `write()`, etc.
+
+### Spark SQL Functions
+
+Spark has many predefined SQL-like functions.
+```python
+from pyspark.sql import functions as F
+df \
+    .withColumn('pickup_date', F.to_date(df.pickup_datetime)) \
+    .withColumn('dropoff_date', F.to_date(df.dropoff_datetime)) \
+    .select('pickup_date', 'dropoff_date', 'PULocationID', 'DOLocationID') \
+    .show()
+```
+
+In addition, we can also define custom functions to run on our DataFrames.
+```python
+def crazy_stuff(base_num):
+    num = int(base_num[1:])
+    if num % 7 == 0:
+        return f's/{num:03x}'
+    elif num % 3 == 0:
+        return f'a/{num:03x}'
+    return f'e/{num:03x}'
+
+crazy_stuff_udf = F.udf(crazy_stuff, returnType=types.StringType())
+
+df \
+    .withColumn('pickup_date', F.to_date(df.pickup_datetime)) \
+    .withColumn('dropoff_date', F.to_date(df.dropoff_datetime)) \
+    .withColumn('base_id', crazy_stuff_udf(df.dispatching_base_num)) \
+    .select('base_id', 'pickup_date', 'dropoff_date', 'PULocationID', 'DOLocationID') \
+    .show()
+```
