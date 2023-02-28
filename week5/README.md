@@ -5,6 +5,7 @@
 * [DE Zoomcamp 5.3.1 - First Look at Spark/PySpark](#de-zoomcamp-531---first-look-at-sparkpyspark)
 * [DE Zoomcamp 5.3.2 - Spark DataFrames](#de-zoomcamp-532---spark-dataframes)
 * [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](#de-zoomcamp-533---optional-preparing-yellow-and-green-taxi-data)
+* [DE Zoomcamp 5.3.4 - SQL with Spark](#de-zoomcamp-534---sql-with-spark)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -190,3 +191,7 @@ df \
 ## [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](https://www.youtube.com/watch?v=CI3P4tAtru4&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
 See [download_data.sh](./download_data.sh) and [05_taxi_schema.ipynb](./05_taxi_schema.ipynb).
+
+## [DE Zoomcamp 5.3.4 - SQL with Spark](https://www.youtube.com/watch?v=uAlp2VuZZPY&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+See [06_spark_sql.ipynb](./06_spark_sql.ipynb).
