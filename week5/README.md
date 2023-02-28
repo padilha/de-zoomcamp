@@ -187,6 +187,6 @@ df \
     .show()
 ```
 
-## [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](https://www.youtube.com/watch?v=ti3aC1m3rE8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+## [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](https://www.youtube.com/watch?v=CI3P4tAtru4&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
 See [download_data.sh](./download_data.sh) and [05_taxi_schema.ipynb](./05_taxi_schema.ipynb).
