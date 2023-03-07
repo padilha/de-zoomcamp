@@ -191,7 +191,7 @@ df \
 
 ## [DE Zoomcamp 5.4.2 - GroupBy in Spark](https://www.youtube.com/watch?v=9qrDsY_2COo&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-In Spark, GroupBy works in two different stages, which were illustrated by Alexey Grigorev in the figures below.
+In Spark, GroupBy works in two different stages, which were illustrated by Alexey Grigorev in the figures below. See [07_groupby.ipynb](./07_groupby.ipynb) for this lesson's code.
 
 First, let's suppose we have three partitions, two executers and that each executer executes the following code:
 ```python
