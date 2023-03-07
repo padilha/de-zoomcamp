@@ -6,6 +6,7 @@
 * [DE Zoomcamp 5.3.2 - Spark DataFrames](#de-zoomcamp-532---spark-dataframes)
 * [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](./05_taxi_schema.ipynb)
 * [DE Zoomcamp 5.3.4 - SQL with Spark](./06_spark_sql.ipynb)
+* [DE Zoomcamp 5.4.2 - GroupBy in Spark](#de-zoomcamp-542---groupby-in-spark)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -187,3 +188,36 @@ df \
     .select('base_id', 'pickup_date', 'dropoff_date', 'PULocationID', 'DOLocationID') \
     .show()
 ```
+
+## [DE Zoomcamp 5.4.2 - GroupBy in Spark](https://www.youtube.com/watch?v=9qrDsY_2COo&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+In Spark, GroupBy works in two different stages, which were illustrated by Alexey Grigorev in the figures below.
+
+First, let's suppose we have three partitions, two executers and that each executer executes the following code:
+```python
+df_green_revenue = spark.sql("""
+SELECT
+    -- Reveneue grouping
+    PULocationID AS revenue_zone,
+    date_trunc('hour', lpep_pickup_datetime) AS hour_month,
+
+    SUM(total_amount) AS revenue_monthly_total_amount,
+    count(1) AS number_records
+FROM
+    green
+WHERE
+    lpep_pickup_datetime >= '2020-01-01 00:00:00'
+GROUP BY
+    1, 2
+ORDER BY
+    1, 2
+""")
+```
+
+Each executer first goes through a filtering step (```lpep_pickup_datetime >= '2020-01-01 00:00:00'```) and then performs an initial groupby operation, since each executer can process only a single partition at a time. After that, the results for each partition are contained in temporary files (in the figure it is called as "subresults", but the instructor also suggested "intermediate results" as a better name).
+
+![](./img/groupby1.png)
+
+Second, Spark takes the intermediate results and performs reshuffling, which moves records between partitions in order to group records with the same key in the same partition (note in the figure the case for records grouped by (H1, Z1) and (H1, Z2)). These steps are performed by an algorithm called External Merge Sort. After reshuffling, Spark does another groupby to group all records with the same key and then reduce the groups to single records.
+
+![](./img/groupby2.png)
