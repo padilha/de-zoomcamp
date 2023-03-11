@@ -7,6 +7,7 @@
 * [DE Zoomcamp 5.3.3 - (Optional) Preparing Yellow and Green Taxi Data](./05_taxi_schema.ipynb)
 * [DE Zoomcamp 5.3.4 - SQL with Spark](./06_spark_sql.ipynb)
 * [DE Zoomcamp 5.4.2 - GroupBy in Spark](#de-zoomcamp-542---groupby-in-spark)
+* [DE Zoomcamp 5.4.3 - Joins in Spark](#de-zoomcamp-543---joins-in-spark)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -191,7 +192,7 @@ df \
 
 ## [DE Zoomcamp 5.4.2 - GroupBy in Spark](https://www.youtube.com/watch?v=9qrDsY_2COo&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-In Spark, GroupBy works in two different stages, which were illustrated by Alexey Grigorev in the figures below. See [07_groupby.ipynb](./07_groupby.ipynb) for this lesson's code.
+In Spark, GroupBy works in two different stages, which were illustrated by Alexey Grigorev in the figures below. See [07_groupby_join.ipynb](./07_groupby_join.ipynb) for this lesson's code.
 
 First, let's suppose we have three partitions, two executers and that each executer executes the following code:
 ```python
@@ -221,3 +222,28 @@ Each executer first goes through a filtering step (```lpep_pickup_datetime >= '2
 Second, Spark takes the intermediate results and performs reshuffling, which moves records between partitions in order to group records with the same key in the same partition (note in the figure the case for records grouped by (H1, Z1) and (H1, Z2)). These steps are performed by an algorithm called External Merge Sort. After reshuffling, Spark does another groupby to group all records with the same key and then reduce the groups to single records.
 
 ![](./img/groupby2.png)
+
+## [DE Zoomcamp 5.4.3 - Joins in Spark](https://www.youtube.com/watch?v=lu7TrqAWuH4&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+In this lesson, we are going to join the yellow and green taxi tables (see [07_groupby_join.ipynb](./07_groupby_join.ipynb)). Both tables are groupped by hour and zone. Now, we want to join them into one table, as in the drawing below by the instructor (Alexey Grigorev), where the yellow columns are the ones that we are going to join on (hour and zone), producing a wider table.
+
+![](./img/join1.png)
+
+See [07_groupby_join.ipynb](./07_groupby_join.ipynb) for the full code. The operation that we are interested in is:
+```python
+df_join = df_green_revenue_tmp.join(df_yellow_revenue_tmp, on=['hour', 'zone'], how='outer')
+```
+
+**How does the above join is performed by Spark?** See the drawing below by Alexey Grigorev. Suppose that we have two partitions per dataset (i.e., two partitions for yellow and two parittions for green), where $\{ Y_1, Y_2, Y_3, ... \}$ and $\{ G_1, G_2, G_3, ... \}$ are the records of each dataset and each record is composed by multiple columns: hour, zone, revenue and count of trips, $(H, Z, R, C)$.
+
+The records will be joined by a composite key (hour, zone), illustrated as $\{ K_1, K_2, ... \}$. In the next step, Spark does reshuffling with External Merge Sort. Suppose that we have three output partitions, then every record with $K_1$ will go to the first partition, $K_2$ will go to the second, $K_3$ to the third and $K_4$ would go to the first partition. As a reminder, the reshuffling step is performed to ensure that records with the same keys end up in the same partitions.
+
+![](./img/join2.png)
+
+Lastly, Spark performs a reduce step similar to the one in groupby, where multiple records are reduced into one. See the drawing below, which illustrates an outer join.
+
+![](./img/join3.png)
+
+In the end of the lesson, we also perform a join between the yellow-green joined table and the taxi zones lookup table. In this case, taxi zones lookup consists of a small table and, for such a reason, Spark performs the join a little bit differently. In this join, Spark broadcasts the zones table to all executors, and the join happens in memory, without the need for any shuffling and merge sort join.
+
+![](./img/join4.png)
