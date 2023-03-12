@@ -9,6 +9,7 @@
 * [DE Zoomcamp 5.4.2 - GroupBy in Spark](#de-zoomcamp-542---groupby-in-spark)
 * [DE Zoomcamp 5.4.3 - Joins in Spark](#de-zoomcamp-543---joins-in-spark)
 * [DE Zoomcamp 5.5.1 - (Optional) Operations on Spark RDDs](#de-zoomcamp-551---optional-operations-on-spark-rdds)
+* [DE Zoomcamp 5.5.2 - (Optional) Spark RDD mapPartition](#de-zoomcamp-552---optional-spark-rdd-mappartition)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -230,7 +231,7 @@ Second, Spark takes the intermediate results and performs reshuffling, which mov
 
 ## [DE Zoomcamp 5.4.3 - Joins in Spark](https://www.youtube.com/watch?v=lu7TrqAWuH4&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-In this lesson, we are going to join the yellow and green taxi tables (see [07_groupby_join.ipynb](./07_groupby_join.ipynb)). Both tables are groupped by hour and zone. Now, we want to join them into one table, as in the drawing below by the instructor (Alexey Grigorev), where the yellow columns are the ones that we are going to join on (hour and zone), producing a wider table.
+In this lesson, we are going to join the yellow and green taxi tables (see [07_groupby_join.ipynb](./07_groupby_join.ipynb)). Both tables are groupped by hour and zone. Now, we want to join them into one table, as in the drawing below, where the yellow columns are the ones that we are going to join on (hour and zone), producing a wider table.
 
 ![](./img/join1.png)
 
@@ -458,9 +459,60 @@ only showing top 20 rows
 
 ## [DE Zoomcamp 5.5.2 - (Optional) Spark RDD mapPartition](https://www.youtube.com/watch?v=k3uB2K99roI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=53)
 
-`mapPartition` receives a data partition as input, applies some function to this data, and produces another partition as output. This process is illustrated in the drawing below by the instructor. Suppose we have a 1 TB dataset that is partitioned into chunks of 100 MB. We want to process each chunk and produce another partition with processed data. Many applications benefit from this sequence of steps, such as machine learning. Suppose we have a trained machine learning model that we put inside the `mapPartition` function. Then, Spark will chunk a large dataset into smaller partitions and apply our model to each partition, outputting its predictions.
+`mapPartition` receives a data partition as input, applies some function to this data, and produces another partition as output. This process is illustrated in the drawing below. Suppose we have a 1 TB dataset that is partitioned into chunks of 100 MB. We want to process each chunk and produce another partition with processed data. Many applications benefit from this sequence of steps, such as machine learning. Suppose we have a trained machine learning model that we put inside the `mapPartition` function. Then, Spark will chunk a large dataset into smaller partitions and apply our model to each partition, outputting its predictions.
 
 ![](./img/mapPartition.png)
 
 [*Drawing by Alexey Grigorev*](https://youtu.be/k3uB2K99roI?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=109)
 
+As a first example, we implement a simple method to count the number of rows in each partition, to illustrate how to use `mapPartition`:
+```python
+def count_rows(partition):
+    count = 0
+    for row in partition:
+        count += 1
+    return [count]
+
+columns = ['VendorID', 'lpep_pickup_datetime', 'PULocationID', 'DOLocationID', 'trip_distance']
+
+duration_rdd = df_green \
+    .select(columns) \
+    .rdd
+
+duration_rdd.mapPartitions(count_rows).collect()
+```
+
+We can also reimplement `count_rows` using pandas (note that although a pandas.DataFrame is simpler to manipulate, this approach materializes the entire DataFrame in memory):
+```python
+import pandas as pd
+
+def count_rows_using_pandas(partition):
+    df = pd.DataFrame(partition, columns=columns)
+    return [len(df)]
+
+duration_rdd.mapPartitions(count_rows_using_pandas).collect()
+```
+
+Now, let's suppose we have a simple machine learning model that predicts the trip duration as the trip distance multiplied by 5. Our code can be implemented as follows:
+```python
+def model_predict(df):
+    #y_pred = model.predict(df)
+    y_pred = df.trip_distance * 5
+    return y_pred
+
+def apply_model_in_batch(rows):
+    df = pd.DataFrame(rows, columns=columns)
+    predictions = model_predict(df)
+    df['predicted_duration'] = predictions
+    for row in df.itertuples():
+        yield row
+
+df_predictions = duration_rdd \
+    .mapPartitions(apply_model_in_batch) \
+    .toDF() \
+    .drop('Index')
+
+df_predictions.select('predicted_duration').show()
+```
+
+As discussed by the instructor, this type of application would use real time processing rather than batch processing, since we would like to inform the estimated time that the trip will take to the user as soon as he/she requests a taxi in his/her app. However, this lesson just pretended it would use batch processing to explain how we can implement `mapPartition` using PySpark.
