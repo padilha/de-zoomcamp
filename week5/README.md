@@ -10,6 +10,8 @@
 * [DE Zoomcamp 5.4.3 - Joins in Spark](#de-zoomcamp-543---joins-in-spark)
 * [DE Zoomcamp 5.5.1 - (Optional) Operations on Spark RDDs](#de-zoomcamp-551---optional-operations-on-spark-rdds)
 * [DE Zoomcamp 5.5.2 - (Optional) Spark RDD mapPartition](#de-zoomcamp-552---optional-spark-rdd-mappartition)
+* [DE Zoomcamp 5.6.1 - Connecting to Google Cloud Storage](#de-zoomcamp-561---connecting-to-google-cloud-storage)
+* [DE Zoomcamp 5.6.2 - Creating a Local Spark Cluster](#de-zoomcamp-562---creating-a-local-spark-cluster)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -516,3 +518,23 @@ df_predictions.select('predicted_duration').show()
 ```
 
 As discussed by the instructor, this type of application would use real time processing rather than batch processing, since we would like to inform the estimated time that the trip will take to the user as soon as he/she requests a taxi in his/her app. However, this lesson just pretended it would use batch processing to explain how we can implement `mapPartition` using PySpark.
+
+## [DE Zoomcamp 5.6.1 - Connecting to Google Cloud Storage](https://www.youtube.com/watch?v=Yyz293hBVcQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=55)
+
+**Step 1:** let's upload `data/pq` to GCS.
+```
+cd data/
+gsutil -m cp -r pq/ gs://dtc_data_lake_dtc-de-375514/pq
+```
+
+If you had the following error: *ServiceException: 401 Anonymous caller does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).*, you must first authenticate in your terminal through the command `gcloud auth login` and then try again.
+
+**Step 2:** download the `gcs-connector-hadoop3-latest.jar`.
+```
+wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-latest.jar
+```
+
+**Step 3:** configure and connect to GCS. Check the first 6 cells of [09_spark_gcs.ipynb](./09_spark_gcs.ipynb).
+
+## [DE Zoomcamp 5.6.2 - Creating a Local Spark Cluster](https://www.youtube.com/watch?v=HXBwSlXo5IA&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=55)
+
