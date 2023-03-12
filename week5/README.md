@@ -595,4 +595,4 @@ After cleaning and rearranging the code a little bit, we can run it in our termi
 python 10_local_spark_cluster.py
 ```
 
-Note: if you get the message *WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources*, it is because we have not set the resources that our `SparkSession` in the Jupyter notebook would use. If that is the case, just kill the process in the Spark Web UI.
+Note: if you get the message *WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources*, it is because we have not set the resources that our `SparkSession` in the Jupyter notebook would use and, for such a reason, it uses all resources available. If that is the case, just kill the process in the Spark Web UI.
