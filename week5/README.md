@@ -565,10 +565,12 @@ We should have an object like this:
 
 ![](./img/spark-session.png)
 
-**Step 3:** if we try to perform any operation, like reading data, we should get an output like this:
+**Step 3:** if we try to perform any operation, like reading data:
 ```python
 df_green = spark.read.parquet('data/pq/green/*/*')
 ```
+
+we should get an output like this:
 
 ```
 WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources
