@@ -8,6 +8,7 @@
 * [DE Zoomcamp 5.3.4 - SQL with Spark](./06_spark_sql.ipynb)
 * [DE Zoomcamp 5.4.2 - GroupBy in Spark](#de-zoomcamp-542---groupby-in-spark)
 * [DE Zoomcamp 5.4.3 - Joins in Spark](#de-zoomcamp-543---joins-in-spark)
+* [DE Zoomcamp 5.5.1 - (Optional) Operations on Spark RDDs](#de-zoomcamp-551---optional-operations-on-spark-rdds)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -247,3 +248,198 @@ Lastly, Spark performs a reduce step similar to the one in groupby, where multip
 In the end of the lesson, we also perform a join between the yellow-green joined table and the taxi zones lookup table. In this case, taxi zones lookup consists of a small table and, for such a reason, Spark performs the join a little bit differently. In this join, Spark broadcasts the zones table to all executors, and the join happens in memory, without the need for any shuffling and merge sort join.
 
 ![](./img/join4.png)
+
+## [DE Zoomcamp 5.5.1 - (Optional) Operations on Spark RDDs](https://www.youtube.com/watch?v=Bdu-xIrF3OM&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+This lesson is related to Resilient Distributed Datasets (RDDs). According to the instructor, most of data processing can be done using Spark DataFrames. Therefore, this class is optional, since it just shows how some things used to be done in Spark a few years ago and how some things are implemented internally. The full code is available in [08_rdds.ipynb](./08_rdds.ipynb).
+
+**Resilient Distributed Dataset (RDD):** a RDD is a distributed dataset that is partitioned. Spark DataFrames are implemented on top of RDDs. Their main difference is that DataFrames have a schema while RDDs are only a distributed collection of objects.
+
+As an example, let's implement the following query using RDDs:
+```sql
+SELECT 
+    date_trunc('hour', lpep_pickup_datetime) AS hour, 
+    PULocationID AS zone,
+
+    SUM(total_amount) AS amount,
+    COUNT(1) AS number_records
+FROM
+    green
+WHERE
+    lpep_pickup_datetime >= '2020-01-01 00:00:00'
+GROUP BY
+    1, 2
+```
+
+**Step 1:** start by loading the green dataset and taking the first five records of the RDD after selecting the desired subset of columns:
+```python
+df_green = spark.read.parquet('data/pq/green/*/*')
+
+rdd = df_green \
+    .select('lpep_pickup_datetime', 'PULocationID', 'total_amount') \
+    .rdd
+
+rdd.take(5)
+```
+
+Which gives us an output like:
+```
+[Row(lpep_pickup_datetime=datetime.datetime(2020, 1, 8, 15, 1, 13), PULocationID=97, total_amount=13.5),
+ Row(lpep_pickup_datetime=datetime.datetime(2020, 1, 27, 16, 4), PULocationID=231, total_amount=29.21),
+ Row(lpep_pickup_datetime=datetime.datetime(2020, 1, 11, 11, 3), PULocationID=222, total_amount=18.48),
+ Row(lpep_pickup_datetime=datetime.datetime(2020, 1, 26, 12, 13), PULocationID=174, total_amount=16.93),
+ Row(lpep_pickup_datetime=datetime.datetime(2020, 1, 22, 3, 48, 21), PULocationID=260, total_amount=6.8)]
+```
+
+In Spark, `Row` is an special object used to build DataFrames.
+
+**Step 2:** we use the `filter` method to filter by `lpep_pickup_datetime` (i.e., to implement the `WHERE` clause):
+```python
+from datetime import datetime
+
+def filter_outliers(row):
+    return row.lpep_pickup_datetime >= start
+
+start = datetime(year=2020, month=1, day=1)
+rdd.filter(filter_outliers).take(3)
+```
+
+**Step 3:** apply the `map` function to implement `SUM(total_amount) AS amount` and `COUNT(1) AS number_records`. In order to be able to groupby, the output of the `map` function must be something in the format (key, value), where key is a composite key (hour zone) and value will (amount, count):
+```python
+def prepare_for_grouping(row):
+    hour = row.lpep_pickup_datetime.replace(minute=0, second=0, microsecond=0)
+    zone = row.PULocationID
+    key = (hour, zone)
+    
+    amount = row.total_amount
+    count = 1
+    value = (amount, count)
+    
+    return (key, value)
+
+rdd \
+    .filter(filter_outliers) \
+    .map(prepare_for_grouping) \
+    .take(5)
+```
+
+**Step 4:** combine values with the same key into a single record. In other words, perform a reduce operation:
+```python
+def calculate_revenue(left_value, right_value):
+    left_amount, left_count = left_value    
+    right_amount, right_count = right_value
+    
+    output_amount = left_amount + right_amount
+    output_count = left_count + right_count
+    return (output_amount, output_count)
+
+rdd \
+    .filter(filter_outliers) \
+    .map(prepare_for_grouping) \
+    .reduceByKey(calculate_revenue) \
+    .take(5)
+```
+
+Which produces an output similar to:
+```
+[((datetime.datetime(2020, 1, 9, 9, 0), 7), (458.36000000000007, 30)),
+ ((datetime.datetime(2020, 1, 3, 17, 0), 165), (69.14, 2)),
+ ((datetime.datetime(2020, 1, 18, 21, 0), 42), (203.26999999999998, 15)),
+ ((datetime.datetime(2020, 1, 3, 17, 0), 241), (22.3, 2)),
+ ((datetime.datetime(2020, 1, 1, 7, 0), 80), (1653.3099999999997, 39))]
+```
+
+**Step 5:** we can see that the output of Step 4 is a structure of nested tuples, which is not so easy to manipulate. Therefore, we unwrap this structure with another `map` function:
+```python
+def unwrap(row):
+    return (row[0][0], row[0][1], row[1][0], row[1][1])
+
+rdd \
+    .filter(filter_outliers) \
+    .map(prepare_for_grouping) \
+    .reduceByKey(calculate_revenue) \
+    .map(unwrap) \
+    .toDF() \
+    .show()
+```
+
+The output is a dataframe like this one:
+```
++-------------------+---+------------------+---+
+|                 _1| _2|                _3| _4|
++-------------------+---+------------------+---+
+|2020-01-09 09:00:00|  7|458.36000000000007| 30|
+|2020-01-03 17:00:00|165|             69.14|  2|
+|2020-01-18 21:00:00| 42|203.26999999999998| 15|
+|2020-01-03 17:00:00|241|              22.3|  2|
+|2020-01-01 07:00:00| 80|1653.3099999999997| 39|
+|2020-01-30 23:00:00|129|            292.88| 25|
+|2020-01-13 14:00:00| 25|             441.0| 22|
+|2020-01-10 11:00:00| 97| 389.8400000000001| 20|
+|2020-01-07 08:00:00|133|163.23000000000002|  7|
+|2020-01-22 13:00:00|244| 589.1100000000001| 28|
+|2020-01-22 20:00:00|181| 257.4300000000001| 21|
+|2020-01-30 18:00:00| 66| 515.8800000000001| 22|
+|2020-01-22 13:00:00|130|361.46000000000004| 14|
+|2020-01-09 14:00:00|193|             143.4| 11|
+|2020-01-07 16:00:00|129|191.92999999999998| 14|
+|2020-01-19 02:00:00|255|            469.14| 22|
+|2020-01-06 07:00:00|244|            297.64| 13|
+|2020-01-25 15:00:00| 95|486.52000000000015| 30|
+|2020-01-08 20:00:00|212|             52.75|  3|
+|2020-01-04 01:00:00| 41|284.76000000000005| 29|
++-------------------+---+------------------+---+
+only showing top 20 rows
+```
+
+Note that column names are lost. We can circumvent this problem using a namedtuple as follows:
+```python
+from collections import namedtuple
+
+RevenueRow = namedtuple('RevenueRow', ['hour', 'zone', 'revenue', 'count'])
+
+def unwrap(row):
+    return RevenueRow(
+        hour=row[0][0],
+        zone=row[0][1],
+        revenue=row[1][0],
+        count=row[1][1]
+    )
+
+rdd \
+    .filter(filter_outliers) \
+    .map(prepare_for_grouping) \
+    .reduceByKey(calculate_revenue) \
+    .map(unwrap) \
+    .toDF() \
+    .show()
+```
+
+Now, the output DataFrame will have column names:
+```
++-------------------+----+------------------+-----+
+|               hour|zone|           revenue|count|
++-------------------+----+------------------+-----+
+|2020-01-09 09:00:00|   7|458.36000000000007|   30|
+|2020-01-03 17:00:00| 165|             69.14|    2|
+|2020-01-18 21:00:00|  42|203.26999999999998|   15|
+|2020-01-03 17:00:00| 241|              22.3|    2|
+|2020-01-01 07:00:00|  80|1653.3099999999997|   39|
+|2020-01-30 23:00:00| 129|            292.88|   25|
+|2020-01-13 14:00:00|  25|             441.0|   22|
+|2020-01-10 11:00:00|  97| 389.8400000000001|   20|
+|2020-01-07 08:00:00| 133|163.23000000000002|    7|
+|2020-01-22 13:00:00| 244| 589.1100000000001|   28|
+|2020-01-22 20:00:00| 181| 257.4300000000001|   21|
+|2020-01-30 18:00:00|  66| 515.8800000000001|   22|
+|2020-01-22 13:00:00| 130|361.46000000000004|   14|
+|2020-01-09 14:00:00| 193|             143.4|   11|
+|2020-01-07 16:00:00| 129|191.92999999999998|   14|
+|2020-01-19 02:00:00| 255|            469.14|   22|
+|2020-01-06 07:00:00| 244|            297.64|   13|
+|2020-01-25 15:00:00|  95|486.52000000000015|   30|
+|2020-01-08 20:00:00| 212|             52.75|    3|
+|2020-01-04 01:00:00|  41|284.76000000000005|   29|
++-------------------+----+------------------+-----+
+only showing top 20 rows
+```
