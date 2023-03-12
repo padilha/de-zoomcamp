@@ -220,15 +220,21 @@ Each executer first goes through a filtering step (```lpep_pickup_datetime >= '2
 
 ![](./img/groupby1.png)
 
+[*Drawing by Alexey Grigorev*](https://youtu.be/9qrDsY_2COo?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=407)
+
 Second, Spark takes the intermediate results and performs reshuffling, which moves records between partitions in order to group records with the same key in the same partition (note in the figure the case for records grouped by (H1, Z1) and (H1, Z2)). These steps are performed by an algorithm called External Merge Sort. After reshuffling, Spark does another groupby to group all records with the same key and then reduce the groups to single records.
 
 ![](./img/groupby2.png)
+
+[*Drawing by Alexey Grigorev*](https://youtu.be/9qrDsY_2COo?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=582)
 
 ## [DE Zoomcamp 5.4.3 - Joins in Spark](https://www.youtube.com/watch?v=lu7TrqAWuH4&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
 In this lesson, we are going to join the yellow and green taxi tables (see [07_groupby_join.ipynb](./07_groupby_join.ipynb)). Both tables are groupped by hour and zone. Now, we want to join them into one table, as in the drawing below by the instructor (Alexey Grigorev), where the yellow columns are the ones that we are going to join on (hour and zone), producing a wider table.
 
 ![](./img/join1.png)
+
+[*Drawing by Alexey Grigorev*](https://youtu.be/lu7TrqAWuH4?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=82)
 
 See [07_groupby_join.ipynb](./07_groupby_join.ipynb) for the full code. The operation that we are interested in is:
 ```python
@@ -241,13 +247,19 @@ The records will be joined by a composite key (hour, zone), illustrated as $\{ K
 
 ![](./img/join2.png)
 
+[*Drawing by Alexey Grigorev*](https://youtu.be/lu7TrqAWuH4?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=456)
+
 Lastly, Spark performs a reduce step similar to the one in groupby, where multiple records are reduced into one. See the drawing below, which illustrates an outer join.
 
 ![](./img/join3.png)
 
+[*Drawing by Alexey Grigorev*](https://youtu.be/lu7TrqAWuH4?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=485)
+
 In the end of the lesson, we also perform a join between the yellow-green joined table and the taxi zones lookup table. In this case, taxi zones lookup consists of a small table and, for such a reason, Spark performs the join a little bit differently. In this join, Spark broadcasts the zones table to all executors, and the join happens in memory, without the need for any shuffling and merge sort join.
 
 ![](./img/join4.png)
+
+[*Drawing by Alexey Grigorev*](https://youtu.be/lu7TrqAWuH4?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=924)
 
 ## [DE Zoomcamp 5.5.1 - (Optional) Operations on Spark RDDs](https://www.youtube.com/watch?v=Bdu-xIrF3OM&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -443,3 +455,12 @@ Now, the output DataFrame will have column names:
 +-------------------+----+------------------+-----+
 only showing top 20 rows
 ```
+
+## [DE Zoomcamp 5.5.2 - (Optional) Spark RDD mapPartition](https://www.youtube.com/watch?v=k3uB2K99roI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=53)
+
+`mapPartition` receives a data partition as input, applies some function to this data, and produces another partition as output. This process is illustrated in the drawing below by the instructor. Suppose we have a 1 TB dataset that is partitioned into chunks of 100 MB. We want to process each chunk and produce another partition with processed data. Many applications benefit from this sequence of steps, such as machine learning. Suppose we have a trained machine learning model that we put inside the `mapPartition` function. Then, Spark will chunk a large dataset into smaller partitions and apply our model to each partition, outputting its predictions.
+
+![](./img/mapPartition.png)
+
+[*Drawing by Alexey Grigorev*](https://youtu.be/k3uB2K99roI?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&t=109)
+
