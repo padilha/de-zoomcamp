@@ -12,6 +12,7 @@
 * [DE Zoomcamp 5.5.2 - (Optional) Spark RDD mapPartition](#de-zoomcamp-552---optional-spark-rdd-mappartition)
 * [DE Zoomcamp 5.6.1 - Connecting to Google Cloud Storage](#de-zoomcamp-561---connecting-to-google-cloud-storage)
 * [DE Zoomcamp 5.6.2 - Creating a Local Spark Cluster](#de-zoomcamp-562---creating-a-local-spark-cluster)
+* [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](#de-zoomcamp-563---setting-up-a-dataproc-cluster)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -596,3 +597,33 @@ python 10_local_spark_cluster.py
 ```
 
 Note: if you get the message *WARN TaskSchedulerImpl: Initial job has not accepted any resources; check your cluster UI to ensure that workers are registered and have sufficient resources*, it is because we have not set the resources that our `SparkSession` in the Jupyter notebook would use and, for such a reason, it uses all resources available. If that is the case, just kill the process in the Spark Web UI.
+
+**Step 5:** use argparse to configure script. See [10_local_spark_cluster.py](./10_local_spark_cluster.py). After adding argparse, we are going to run the script as:
+```
+python 10_local_spark_cluster.py \
+    --input_green=data/pq/green/2020/*/ \
+    --input_yellow=data/pq/yellow/2020/*/ \
+    --output=data/report-2020
+```
+
+**Step 6:** suppose we have multiple clusters, then hardcoding the master is not a good practice. A better way is remove the `.master()` call in the code and use `spark-submit` as follows:
+```
+export URL="spark://padilha-A70-HYB:7077"
+
+spark-submit \
+    --master="${URL}" \
+    10_local_spark_cluster.py \
+        --input_green=data/pq/green/2021/*/ \
+        --input_yellow=data/pq/yellow/2021/*/ \
+        --output=data/report-2021
+```
+
+**Step 7:** stop worker and master.
+```
+./spark-3.2.1-bin-hadoop3.2/sbin/stop-worker.sh
+./spark-3.2.1-bin-hadoop3.2/sbin/stop-master.sh
+```
+
+## [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](https://www.youtube.com/watch?v=osAiAYahvh8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=56)
+
+TO DO

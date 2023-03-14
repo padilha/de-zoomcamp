@@ -1,15 +1,26 @@
-import pyspark
+import argparse
+
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
+
+parser = argparse.ArgumentParser(description='Ingest CSV data to Postgres')
+parser.add_argument('--input_green', required=True)
+parser.add_argument('--input_yellow', required=True)
+parser.add_argument('--output', required=True)
+args = parser.parse_args()
+
+input_green = args.input_green
+input_yellow = args.input_yellow
+output = args.output
 
 spark = SparkSession.builder \
     .master("spark://padilha-A70-HYB:7077") \
     .appName('test') \
     .getOrCreate()
 
-df_green = spark.read.parquet('data/pq/green/*/*')
+df_green = spark.read.parquet(input_green)
 
-df_yellow = spark.read.parquet('data/pq/yellow/*/*')
+df_yellow = spark.read.parquet(input_yellow)
 
 df_green = df_green \
     .withColumnRenamed('lpep_pickup_datetime', 'pickup_datetime') \
@@ -83,4 +94,4 @@ GROUP BY
     1, 2, 3
 """)
 
-df_result.coalesce(1).write.parquet('data/report/revenue/', mode='overwrite')
+df_result.coalesce(1).write.parquet(output, mode='overwrite')
