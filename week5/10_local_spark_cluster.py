@@ -14,7 +14,6 @@ input_yellow = args.input_yellow
 output = args.output
 
 spark = SparkSession.builder \
-    .master("spark://padilha-A70-HYB:7077") \
     .appName('test') \
     .getOrCreate()
 

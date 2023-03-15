@@ -626,4 +626,22 @@ spark-submit \
 
 ## [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](https://www.youtube.com/watch?v=osAiAYahvh8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=56)
 
-TO DO
+**Step 1:** create cluster.
+
+![](./img/create_cluster.png)
+
+![](./img/cluster1.png)
+
+![](./img/cluster2.png)
+
+**Step 2:** upload Python code to GCS Bucket.
+```
+gsutil cp 10_local_spark_cluster.py gs://dtc_data_lake_dtc-de-375514/code/10_local_spark_cluster.py
+```
+
+**Step 3:** submit a job using the UI. In the created cluster page, click on "Sumit Job" and fill the form.
+
+![](./img/submit_job.png)
+
+
+
