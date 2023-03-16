@@ -639,9 +639,20 @@ spark-submit \
 gsutil cp 10_local_spark_cluster.py gs://dtc_data_lake_dtc-de-375514/code/10_local_spark_cluster.py
 ```
 
-**Step 3:** submit a job using the UI. In the created cluster page, click on "Sumit Job" and fill the form.
+**Step 3:** submit a job using the UI. In the created cluster page, click on "Sumit Job" and fill the form. The output will be saved in the bucket.
 
 ![](./img/submit_job.png)
 
-
+**Step 4:** the job can also be submitted using the gcloud client.
+```
+gcloud dataproc jobs submit pyspark \
+    --project=dtc-de-375514 \
+    --cluster=de-zoomcamp-cluster \
+    --region=europe-west6 \
+    gs://dtc_data_lake_dtc-de-375514/code/10_local_spark_cluster.py \
+    -- \
+        --input_green=gs://dtc_data_lake_dtc-de-375514/pq/green/2020/*/ \
+        --input_yellow=gs://dtc_data_lake_dtc-de-375514/pq/yellow/2020/*/ \
+        --output=gs://dtc_data_lake_dtc-de-375514/report-2020
+```
 
