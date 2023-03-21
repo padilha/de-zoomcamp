@@ -7,6 +7,7 @@
 * [DE Zoomcamp 4.3.2 - Testing and Documenting the Project](#de-zoomcamp-432---testing-and-documenting-the-project)
 * [DE Zoomcamp 4.4.1 - Deployment Using dbt Cloud](#de-zoomcamp-441---deployment-using-dbt-cloud)
 * [DE Zoomcamp 4.5.1 - Visualising the data with Google Data Studio](#de-zoomcamp-451---visualising-the-data-with-google-data-studio)
+* [Learning in public (LinkedIn)](https://www.linkedin.com/posts/victor-padilha_dezoomcamp-dataengineering-analyticsengineering-activity-7034503830780166144-IsVq?utm_source=share&utm_medium=member_desktop)
 
 ## [DE Zoomcamp 4.1.1 - Analytics Engineering Basics](https://www.youtube.com/watch?v=uF76d5EmdtU&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=33)
 
