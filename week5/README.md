@@ -13,6 +13,7 @@
 * [DE Zoomcamp 5.6.1 - Connecting to Google Cloud Storage](#de-zoomcamp-561---connecting-to-google-cloud-storage)
 * [DE Zoomcamp 5.6.2 - Creating a Local Spark Cluster](#de-zoomcamp-562---creating-a-local-spark-cluster)
 * [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](#de-zoomcamp-563---setting-up-a-dataproc-cluster)
+* [DE Zoomcamp 5.6.4 - Connecting Spark to Big Query](#de-zoomcamp-564---connecting-spark-to-big-query)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -626,4 +627,74 @@ spark-submit \
 
 ## [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](https://www.youtube.com/watch?v=osAiAYahvh8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=56)
 
-TO DO
+**Step 1:** create cluster.
+
+![](./img/create_cluster.png)
+
+![](./img/cluster1.png)
+
+![](./img/cluster2.png)
+
+**Step 2:** upload Python code to GCS Bucket.
+```
+gsutil cp 10_local_spark_cluster.py gs://dtc_data_lake_dtc-de-375514/code/10_local_spark_cluster.py
+```
+
+**Step 3:** submit a job using the UI. In the created cluster page, click on "Sumit Job" and fill the form. The output will be saved in the bucket.
+
+![](./img/submit_job.png)
+
+**Step 4:** the job can also be submitted using the gcloud client.
+```
+gcloud dataproc jobs submit pyspark \
+    --project=dtc-de-375514 \
+    --cluster=de-zoomcamp-cluster \
+    --region=europe-west6 \
+    gs://dtc_data_lake_dtc-de-375514/code/10_local_spark_cluster.py \
+    -- \
+        --input_green=gs://dtc_data_lake_dtc-de-375514/pq/green/2020/*/ \
+        --input_yellow=gs://dtc_data_lake_dtc-de-375514/pq/yellow/2020/*/ \
+        --output=gs://dtc_data_lake_dtc-de-375514/report-2020
+```
+
+## [DE Zoomcamp 5.6.4 - Connecting Spark to Big Query](https://www.youtube.com/watch?v=HIm2BOj8C0Q&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=57)
+
+**Step 1:** in this lesson, we are going to write our results to BigQuery. For such, we modify our script to (see [11_big_query.py](./11_big_query.py)):
+```python
+spark = SparkSession.builder \
+    .appName('test') \
+    .getOrCreate()
+
+spark.conf.set('temporaryGcsBucket', 'dataproc-temp-europe-west6-20820862035-y4bk6fli')
+
+...
+
+df_result.write.format('bigquery') \
+    .option('table', output) \
+    .save()
+```
+
+**Step 2:** upload the code to the GCS Bucket.
+```
+gsutil cp 11_big_query.py gs://dtc_data_lake_dtc-de-375514/code/11_big_query.py
+```
+
+**Step 3:** submit the job.
+```
+gcloud dataproc jobs submit pyspark \
+    --project=dtc-de-375514 \
+    --cluster=de-zoomcamp-cluster \
+    --region=europe-west6 \
+    --jars=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar \
+    gs://dtc_data_lake_dtc-de-375514/code/11_big_query.py \
+    -- \
+        --input_green=gs://dtc_data_lake_dtc-de-375514/pq/green/2020/*/ \
+        --input_yellow=gs://dtc_data_lake_dtc-de-375514/pq/yellow/2020/*/ \
+        --output=trips_data_all.report-2020
+```
+
+**Step 4:** open BigQuery and check the results.
+
+![](./img/bigquery1.png)
+
+![](./img/bigquery2.png)

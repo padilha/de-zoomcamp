@@ -17,6 +17,8 @@ spark = SparkSession.builder \
     .appName('test') \
     .getOrCreate()
 
+spark.conf.set('temporaryGcsBucket', 'dataproc-temp-europe-west6-20820862035-y4bk6fli')
+
 df_green = spark.read.parquet(input_green)
 
 df_yellow = spark.read.parquet(input_yellow)
@@ -93,4 +95,6 @@ GROUP BY
     1, 2, 3
 """)
 
-df_result.coalesce(1).write.parquet(output, mode='overwrite')
+df_result.write.format('bigquery') \
+    .option('table', output) \
+    .save()
