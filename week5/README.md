@@ -14,6 +14,7 @@
 * [DE Zoomcamp 5.6.2 - Creating a Local Spark Cluster](#de-zoomcamp-562---creating-a-local-spark-cluster)
 * [DE Zoomcamp 5.6.3 - Setting up a Dataproc Cluster](#de-zoomcamp-563---setting-up-a-dataproc-cluster)
 * [DE Zoomcamp 5.6.4 - Connecting Spark to Big Query](#de-zoomcamp-564---connecting-spark-to-big-query)
+* [Learning in public (LinkedIn)](https://www.linkedin.com/posts/victor-padilha_dezoomcamp-dataengineering-analyticsengineering-activity-7044631154527772672-nVQo?utm_source=share&utm_medium=member_desktop)
 
 ## [DE Zoomcamp 5.1.1 - Introduction to Batch processing](https://www.youtube.com/watch?v=dcHe5Fl3MF8&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
