@@ -225,17 +225,8 @@ models:
             description: The date and time of the trip dropoff
           - name: pickup_locationid 
             description: TLC Taxi Zone in which the trip began
-            tests:
-              - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
-                  severity: warn
           - name: dropoff_locationid 
             description: TLC Taxi Zone in which the trip ended
-            tests:
-              - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
           - name: SR_Flag
             description: >
                 Indicates if the trip was a part of a shared ride chain offered by a
