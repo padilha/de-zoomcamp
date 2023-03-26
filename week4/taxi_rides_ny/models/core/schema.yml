@@ -5,10 +5,16 @@ models:
     description: >
       List of unique zones identified by locationid. 
       Includes the service zone they correspond to (Green or yellow).
+  
   - name: fact_trips
     description: >
       Taxi trips corresponding to both service zones (Green and yellow).
       The table contains records where both pickup and dropoff locations are valid and known zones. 
+      Each record corresponds to a trip uniquely identified by tripid. 
+  
+  - name: fhv_fact_trips
+    description: >
+      FHV trips. The table contains records where both pickup and dropoff locations are valid and known zones. 
       Each record corresponds to a trip uniquely identified by tripid. 
       
   - name: dm_monthly_zone_revenue
