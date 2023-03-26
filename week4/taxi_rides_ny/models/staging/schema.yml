@@ -221,7 +221,7 @@ models:
             description: The TLC Base License Number of the base that dispatched the trip
           - name: pickup_datetime 
             description: The date and time of the trip pick-up
-          - name: DropOff_datetime 
+          - name: dropoff_datetime 
             description: The date and time of the trip dropoff
           - name: pickup_locationid 
             description: TLC Taxi Zone in which the trip began
