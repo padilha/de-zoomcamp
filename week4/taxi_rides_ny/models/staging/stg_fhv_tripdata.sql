@@ -3,7 +3,7 @@
 with tripdata as 
 (
   select *,
-    row_number() over(partition by Dispatching_base_num, Pickup_datetime) as rn
+    row_number() over(partition by Dispatching_base_num, Pickup_datetime, DropOff_datetime) as rn
   from {{ source('staging','fhv_tripdata') }}
 )
 select
