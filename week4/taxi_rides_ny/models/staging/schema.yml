@@ -15,6 +15,7 @@ sources:
       tables:
         - name: green_tripdata
         - name: yellow_tripdata
+        - name: fhv_tripdata
          # freshness:
            # error_after: {count: 6, period: hour}
 
@@ -201,3 +202,42 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+  
+    - name: stg_fhv_tripdata
+      description: >
+        For-Hire Vehicles (FHVs) provide pre-arranged transportation throughout New York City.
+        For-Hire trips are arranged through TLC licensed bases.  FHV bases accept trip requests from passengers,
+        dispatch TLC licensed drivers in TLC licensed vehicles, and are responsible for collecting and paying
+        taxes, as well as providing driver benefits. 
+      columns:
+          - name: tripid
+            description: Primary key for this table, generated with a concatenation of dispatching_base_num+pickup_datetime
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: dispatching_base_num 
+            description: The TLC Base License Number of the base that dispatched the trip
+          - name: pickup_datetime 
+            description: The date and time of the trip pick-up
+          - name: DropOff_datetime 
+            description: The date and time of the trip dropoff
+          - name: pickup_locationid 
+            description: TLC Taxi Zone in which the trip began
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: dropoff_locationid 
+            description: TLC Taxi Zone in which the trip ended
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+          - name: SR_Flag
+            description: >
+                Indicates if the trip was a part of a shared ride chain offered by a
+                High Volume FHV company (e.g. Uber Pool, Lyft Line). For shared
+                trips, the value is 1. For non-shared rides, this field is null.
