@@ -211,7 +211,7 @@ models:
         taxes, as well as providing driver benefits. 
       columns:
           - name: tripid
-            description: Primary key for this table, generated with a concatenation of dispatching_base_num+pickup_datetime
+            description: Primary key for this table, generated with a concatenation of dispatching_base_num+pickup_datetime+dropoff_datetime
             tests:
                 - unique:
                     severity: warn

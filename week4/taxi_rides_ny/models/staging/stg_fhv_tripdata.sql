@@ -5,11 +5,10 @@ with tripdata as
   select *,
     row_number() over(partition by Dispatching_base_num, Pickup_datetime) as rn
   from {{ source('staging','fhv_tripdata') }}
-  where Dispatching_base_num is not null 
 )
 select
     -- identifiers
-    {{ dbt_utils.surrogate_key(['Dispatching_base_num', 'Pickup_datetime']) }} as tripid,
+    {{ dbt_utils.surrogate_key(['Dispatching_base_num', 'Pickup_datetime', 'DropOff_datetime']) }} as tripid,
     Dispatching_base_num as dispatching_base_num,
     cast(PULocationID as integer) as pickup_locationid,
     cast(DOLocationID as integer) as dropoff_locationid,
