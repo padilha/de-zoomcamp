@@ -50,7 +50,11 @@ You will need to complete "Visualising the data" videos, either using [google da
 - 76.3/23.7
 - 99.1/0.9
 
+### Solution
 
+![](./img/homework-question2.png)
+
+**Answer:** 89.8/10.2. Closest one is 89.9/10.1.
 
 ## Question 3: 
 
@@ -105,7 +109,11 @@ Create a dashboard with some tiles that you find interesting to explore the data
 - January
 - December
 
+### Solution
 
+![](./img/homework-question5.png)
+
+**Answer:** January.
 
 ## Submitting the solutions
 
