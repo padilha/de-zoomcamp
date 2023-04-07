@@ -1,6 +1,7 @@
-## Week 5 Overview
+## Week 6 Overview
 
 * [DE Zoomcamp 6.3 - What is kafka?](#de-zoomcamp-63---what-is-kafka)
+* [DE Zoomcamp 6.4 - Confluent cloud](#de-zoomcamp-64---confluent-cloud)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -10,3 +11,30 @@
 
 **Kafka:** is a platform that provides robustness and reliability to topics when building a streaming system, by replicating data across different nodes and tolerating faults such as some nodes going down. It also provides scalability and flexibility, being able to handle thousands of events per second, topics of different sizes and a varying number of consumers.
 
+## [DE Zoomcamp 6.4 - Confluent cloud](https://www.youtube.com/watch?v=ZnEZFEYKppw)
+
+**Step 1:** create a [Confluent cloud](https://www.confluent.io/confluent-cloud/) free account and configure a basic cluster.
+
+![](./img/basic-cluster1.png)
+
+Select GCP and the region (in my case, I have been using europe-west6). Then define a cluster name and launch.
+
+![](./img/basic-cluster2.png)
+
+![](./img/basic-cluster3.png)
+
+**Step 2:** create a Global Access API key.
+
+![](./img/api-key1.png)
+
+![](./img/api-key2.png)
+
+**Step 3:** create a topic.
+
+![](./img/topic1.png)
+
+![](./img/topic2.png)
+
+**Step 4:** create a Datagen Source connector with JSON as the output record value format and Orders as the template.
+
+![](./img/connector.png)
