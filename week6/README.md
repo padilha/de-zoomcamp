@@ -55,14 +55,30 @@ Select GCP and the region (in my case, I have been using europe-west6). Then def
 
 ## [DE Zoomcamp 6.6 - Kafka configuration](https://www.youtube.com/watch?v=SXQtWyRpMKs)
 
-**Kafka cluster:** a kafka cluster consists of a set of machines (also called nodes) running kafka that communicate to each other according to some communication protocol.
+**Kafka cluster:** a Kafka cluster consists of a set of machines (also called nodes) running kafka that communicate to each other according to some communication protocol.
 
-**How does Kafka provide reliability?** Kafka uses Leader-Follower replication to avoid losing data and ensure that producers and consumers do not note any difference (there might be some seconds of delay, but the system should keep working as before). In other words, whenever a leader dies, one of the followers will become the new leader.
+**How does Kafka provide reliability?** Kafka uses Leader-Follower replication to avoid losing data and ensure that producers and consumers do not note any difference if a node is down (there might be some seconds of delay, but the system should keep working as before). In other words, whenever a leader dies, one of the followers will become the new leader.
 
 **Partition:** partitions help with scalability. In Kafka, only a single consumer can connect to a partition. Therefore, when we partition a topic, we allow multiple consumers to read different messages from the same topic at the same time.
 
-In the example below, the Taxi Rides topic has two partitions, which are read by consumers 1 and 2. If we add a third consumer, nothing will happen. However, if one of the current consumers (1 or 2) dies, Kafka redirects partition 2 messages to consumer 3.
+In the example below, the Taxi Rides topic has two partitions, which are read by consumers 1 and 2. If we add a third consumer to the group (which is identified by a group id), nothing will happen. However, if one of the current consumers (1 or 2) dies, Kafka redirects partition 2 messages to consumer 3.
 
 ![](./img/partition-example.png)
 
 [*Drawing by the instructor*](https://youtu.be/SXQtWyRpMKs?t=1137)
+
+**Offset:** an offset is an integer value attached to a message (such as 0, 1, 2, ..., etc). Whenever a consumer reads a message from a topic, it acknowledges back to Kafka that the message has been consumed. In this case, an acknowledgement consists in storing this information in an internal topic called __consumer_offset. Therefore, if a consumer goes offline and reconnects to Kafka after some time, then Kafka knows how many messages were already committed for the group id of the consumer. This process is illustrated in the drawing below.
+
+![](./img/offset-example.png)
+
+[*Drawing by the instructor*](https://youtu.be/SXQtWyRpMKs?t=1426)
+
+**Auto offset reset:** the auto offset reset determines how Kafka will react when a new group id is attached to a topic. The two possible values are _latest_ or _earliest_. When auto offset reset is set to _latest_, the new group id will continue reading from the current offset that is stored by Kafka for that topic. On the other hand, when auto offset reset is set to _earliest_, the new group id will start reading from the earliest message that is stored by Kafka for that topic.
+
+**Acknowledgement:** when a producer produces a message for a topic, the message must be replicated across all followers. Some examples of acknowledgement are:
+
+* Acknowledgement 0: also called as "fire and forget". The producer sends the message and forgets about it, and it does not care if the message was delivered to leader or not.
+
+* Acknowledgement 1: the leader must be successful. I. e., the message must be committed to the physical log of the leader.
+
+* Acknowledgement all: the leader and the followers must be successful. I. e., the message must be committed by leader to its physical log, replicated to the followers and physically committed by them. Only after all of these steps are completed, the producer receives a confirmation. If any of these steps fail, the producer receives an error, and must resend the message.
