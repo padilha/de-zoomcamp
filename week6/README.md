@@ -4,6 +4,7 @@
 * [DE Zoomcamp 6.4 - Confluent cloud](#de-zoomcamp-64---confluent-cloud)
 * [DE Zoomcamp 6.5 - Kafka producer consumer](#de-zoomcamp-65---kafka-producer-consumer)
 * [DE Zoomcamp 6.6 - Kafka configuration](#de-zoomcamp-66---kafka-configuration)
+* [DE Zoomcamp 6.7 - Kafka streams basics](#de-zoomcamp-67---kafka-streams-basics)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -49,7 +50,7 @@ Select GCP and the region (in my case, I have been using europe-west6). Then def
 
 **Step 3:** run [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java) and see the messages in Confluent cloud.
 
-![](./img/messages.png)
+![](./img/messages1.png)
 
 **Step 4:** run [JsonConsumer.java](./java/kafka_examples/src/main/java/org/example/JsonConsumer.java). It may take some seconds until the connection is set up and the consumer to start printing the results.
 
@@ -82,3 +83,29 @@ In the example below, the Taxi Rides topic has two partitions, which are read by
 * Acknowledgement 1: the leader must be successful, i. e., the message must be committed to the physical log of the leader.
 
 * Acknowledgement all: the leader and the followers must be successful, i. e., the message must be committed by leader to its physical log, replicated to the followers and physically committed by them. Only after all of these steps are completed, the producer receives a confirmation. If any of these steps fail, the producer receives an error, and must resend the message.
+
+## [DE Zoomcamp 6.7 - Kafka streams basics](https://www.youtube.com/watch?v=dUyA_63eRb0)
+
+**Step 1:** create a new topic named "rides-pulocation-count" with 2 partitions.
+
+**Step 2:** run [JsonKStream.java](./java/kafka_examples/src/main/java/org/example/JsonKStream.java) and [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java). We can see the messages under rides-pulocation-count in Confluent cloud.
+
+![](./img/messages2.png)
+
+The flow of this lesson works as follows. There are rides being sent to the topic, which are grouped by the PULocationID, counted and sent to a new topic rides-pulocation-count. Note that the 2 partitions that we created in Step 1 are being consumed by the same consumer.
+
+![](./img/kafka-streams-basics1.png)
+
+[*Drawing by the instructor*](https://youtu.be/dUyA_63eRb0?t=746)
+
+On the other hand, if we had two consumers, we would have one partition (P0) assigned to the first consumer and the other partition (P1) to the second consumer. Note that, in this case, the count might be wrong if the data is not partitioned in the correct way. For example, if one key K1 goes to P0, the count output will be 1 by App 1. Next, if K1 goes to P1, the count output will also be 1 by App 2. However, in this scenario, it should have been 2.
+
+![](./img/kafka-streams-basics2.png)
+
+[*Drawing by the instructor*](https://youtu.be/dUyA_63eRb0?t=805)
+
+To prevent the aforementioned problem, by default, whenever Kafka receives a new message from a producer, it hashes the key and applies the modulo operator by the number of partitions to determine to which partition the message will be sent. In this way, it is possible to ensure that messages with the same key will always be assigned to the same partition (see the drawing below).
+
+![](./img/kafka-streams-basics3.png)
+
+[*Drawing by the instructor*](https://youtu.be/dUyA_63eRb0?t=973)
