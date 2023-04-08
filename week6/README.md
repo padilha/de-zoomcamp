@@ -79,6 +79,6 @@ In the example below, the Taxi Rides topic has two partitions, which are read by
 
 * Acknowledgement 0: also called as "fire and forget". The producer sends the message and forgets about it, and it does not care if the message was delivered to leader or not.
 
-* Acknowledgement 1: the leader must be successful. I. e., the message must be committed to the physical log of the leader.
+* Acknowledgement 1: the leader must be successful, i. e., the message must be committed to the physical log of the leader.
 
-* Acknowledgement all: the leader and the followers must be successful. I. e., the message must be committed by leader to its physical log, replicated to the followers and physically committed by them. Only after all of these steps are completed, the producer receives a confirmation. If any of these steps fail, the producer receives an error, and must resend the message.
+* Acknowledgement all: the leader and the followers must be successful, i. e., the message must be committed by leader to its physical log, replicated to the followers and physically committed by them. Only after all of these steps are completed, the producer receives a confirmation. If any of these steps fail, the producer receives an error, and must resend the message.
