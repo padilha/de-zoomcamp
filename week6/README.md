@@ -2,6 +2,8 @@
 
 * [DE Zoomcamp 6.3 - What is kafka?](#de-zoomcamp-63---what-is-kafka)
 * [DE Zoomcamp 6.4 - Confluent cloud](#de-zoomcamp-64---confluent-cloud)
+* [DE Zoomcamp 6.5 - Kafka producer consumer](#de-zoomcamp-65---kafka-producer-consumer)
+* [DE Zoomcamp 6.6 - Kafka configuration](#de-zoomcamp-66---kafka-configuration)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -49,4 +51,18 @@ Select GCP and the region (in my case, I have been using europe-west6). Then def
 
 ![](./img/messages.png)
 
-**Step 4:** run [JsonConsumer.java)](./java/kafka_examples/src/main/java/org/example/JsonConsumer.java). It may take some seconds until the connection is set up and the consumer to start printing the results.
+**Step 4:** run [JsonConsumer.java](./java/kafka_examples/src/main/java/org/example/JsonConsumer.java). It may take some seconds until the connection is set up and the consumer to start printing the results.
+
+## [DE Zoomcamp 6.6 - Kafka configuration](https://www.youtube.com/watch?v=SXQtWyRpMKs)
+
+**Kafka cluster:** a kafka cluster consists of a set of machines (also called nodes) running kafka that communicate to each other according to some communication protocol.
+
+**How does Kafka provide reliability?** Kafka uses Leader-Follower replication to avoid losing data and ensure that producers and consumers do not note any difference (there might be some seconds of delay, but the system should keep working as before). In other words, whenever a leader dies, one of the followers will become the new leader.
+
+**Partition:** partitions help with scalability. In Kafka, only a single consumer can connect to a partition. Therefore, when we partition a topic, we allow multiple consumers to read different messages from the same topic at the same time.
+
+In the example below, the Taxi Rides topic has two partitions, which are read by consumers 1 and 2. If we add a third consumer, nothing will happen. However, if one of the current consumers (1 or 2) dies, Kafka redirects partition 2 messages to consumer 3.
+
+![](./img/partition-example.png)
+
+[*Drawing by the instructor*](https://youtu.be/SXQtWyRpMKs?t=1137)
