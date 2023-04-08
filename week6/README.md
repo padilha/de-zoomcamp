@@ -38,3 +38,15 @@ Select GCP and the region (in my case, I have been using europe-west6). Then def
 **Step 4:** create a Datagen Source connector with JSON as the output record value format and Orders as the template.
 
 ![](./img/connector.png)
+
+## [DE Zoomcamp 6.5 - Kafka producer consumer](https://www.youtube.com/watch?v=aegTuyxX7Yg)
+
+**Step 1:** create a new topic named "rides" with 2 partitions and 1 day of retention time.
+
+**Step 2:** add API keys to [Secrets.java](./java/kafka_examples/src/main/java/org/example/Secrets.java).
+
+**Step 3:** run [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java) and see the messages in Confluent cloud.
+
+![](./img/messages.png)
+
+**Step 4:** run [JsonConsumer.java)](./java/kafka_examples/src/main/java/org/example/JsonConsumer.java). It may take some seconds until the connection is set up and the consumer to start printing the results.
