@@ -1,4 +1,4 @@
-This repository contains my notes of the awesome [Data Engineering Zoomcamp by DataTalksClub].
+This repository contains my notes of the awesome [Data Engineering Zoomcamp by DataTalksClub](https://github.com/DataTalksClub/data-engineering-zoomcamp).
 
 If you find any errors/inconsistencies or have any suggestions for improvement, do not hesitate to create a pull request. :smiley:
 
