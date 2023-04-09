@@ -5,6 +5,7 @@
 * [DE Zoomcamp 6.5 - Kafka producer consumer](#de-zoomcamp-65---kafka-producer-consumer)
 * [DE Zoomcamp 6.6 - Kafka configuration](#de-zoomcamp-66---kafka-configuration)
 * [DE Zoomcamp 6.7 - Kafka streams basics](#de-zoomcamp-67---kafka-streams-basics)
+* [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -109,3 +110,27 @@ To prevent the aforementioned problem, by default, whenever Kafka receives a new
 ![](./img/kafka-streams-basics3.png)
 
 [*Drawing by the instructor*](https://youtu.be/dUyA_63eRb0?t=973)
+
+## [DE Zoomcamp 6.8 - Kafka stream join](https://www.youtube.com/watch?v=NcpKlujh34Y)
+
+In this lesson, let's pretend that we are working for a ride-hailing company, and that there are taxis that are dropping off people at some location id, while there are people that are requesting rides from the same location id. Therefore, it would be interesting to match these rides in some time interval to improve the efficiency of the service. This situation is illustrated in the figure below.
+
+![](./img/join-example.png)
+
+[*Figure by the instructor*](https://youtu.be/NcpKlujh34Y?t=43)
+
+**Step 1:** we already have the "rides" topic. Now, let's create two new topics: "rides_location" and "vendor_info", both with 2 partitions. The former topic will have the pickup location id while the latter topic will be used to match the dropoff location id of another ride with the pickup location id from "rides_location".
+
+**Step 2:** run [JsonKStreamJoins.java](./java/kafka_examples/src/main/java/org/example/JsonKStreamJoins.java).
+
+**Step 3:** run [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java).
+
+**Step 4:** run [JsonProducerPickupLocation.java](./java/kafka_examples/src/main/java/org/example/JsonProducerPickupLocation.java).
+
+We can see the created pickup location and the joins outputted to the vendor_info topic.
+
+![](./img/rides-location-topic.png)
+
+![](./img/vendor-info-topic.png)
+
+> Note: One important thing to remember when joining two topics is to have the same partition count for both topics. That is a requirement in Kafka.
