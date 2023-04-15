@@ -6,6 +6,7 @@
 * [DE Zoomcamp 6.6 - Kafka configuration](#de-zoomcamp-66---kafka-configuration)
 * [DE Zoomcamp 6.7 - Kafka streams basics](#de-zoomcamp-67---kafka-streams-basics)
 * [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
+* [DE Zoomcamp 6.10 - Kafka stream windowing](#de-zoomcamp-610---kafka-stream-windowing)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -134,3 +135,51 @@ We can see the created pickup location and the joins outputted to the vendor_inf
 ![](./img/vendor-info-topic.png)
 
 > Note: One important thing to remember when joining two topics is to have the same partition count for both topics. That is a requirement in Kafka.
+
+## [DE Zoomcamp 6.10 - Kafka stream windowing](https://www.youtube.com/watch?v=r1OuLdwxbRc)
+
+### Global KTable
+
+Assuming a Kafka stream application where we have two nodes, each one with a [KTable](https://docs.confluent.io/platform/current/streams/concepts.html#ktable) that is a partition of a given topic. If we need to join this data, we will need to shuffle it or create another topic, since each node contains only part of the given topic. The main problem here is that shuffling is always a costly operation in a distributed system.
+
+![](./img/ktables.png)
+
+[*Figure by the instructor*](https://youtu.be/r1OuLdwxbRc?t=53)
+
+A Global KTable is a way to circumvent the problem described above. In this case, the complete data will be available to each node and, when joining data, we do not have to shuffle it across nodes. Note that the main caveat here is that there might be some memory or storage issues. Therefore, Global KTables must be of a limited and manageable size.
+
+![](./img/global_ktable.png)
+
+[*Figure by the instructor*](https://youtu.be/r1OuLdwxbRc?t=122)
+
+### Windowing
+
+Windowed operations allow us to join data contained in a time interval (also called a time window). There are three types of windows that can be used for joining data. They are listed below. For more details, check the [ksqlDB's documentation](https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/).
+
+**Tumbling window**
+
+Tumbling windows always have the same size and do not overlap with adjacent windows. Therefore, a record will always belong to a single window. An example of a 5-min tumbling window is illustrated in the figure below.
+
+![](https://docs.ksqldb.io/en/latest/img/ksql-time-windows-tumbling.png)
+
+[*Figure from ksqlDB's documentation*](https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/)
+
+**Hopping window**
+
+Hopping windows are defined by two properties: length and hop. The hop refers to the difference between the time that the current and the previous window end. In other words, the hop defines by how much the current window advances in time with respect to the previous window. An example of a 5-min hopping window with 1-min hop is shown below.
+
+![](https://docs.ksqldb.io/en/latest/img/ksql-time-windows-hopping.png)
+
+[*Figure from ksqlDB's documentation*](https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/)
+
+**Session window**
+
+Session windows are defined by an inactivity gap. That is, a new session is started only after a period of inactivity has occurred. An example of a session window with a 5-min inactivity gap is presented in the figure below.
+
+![](https://docs.ksqldb.io/en/latest/img/ksql-session-windows.gif)
+
+[*Figure from ksqlDB's documentation*](https://docs.ksqldb.io/en/latest/concepts/time-and-windows-in-ksqldb-queries/)
+
+### Kafka example
+
+The example code of this lesson can be run by creating a topic named rides-pulocation-window-count in Confluent Cloud and running the [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java) and [JsonKStreamWindow.java](./java/kafka_examples/src/main/java/org/example/JsonKStreamWindow.java) classes.
