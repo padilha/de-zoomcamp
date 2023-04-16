@@ -8,6 +8,7 @@
 * [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
 * [DE Zoomcamp 6.10 - Kafka stream windowing](#de-zoomcamp-610---kafka-stream-windowing)
 * [DE Zoomcamp 6.11 - Kafka ksqldb & Connect](#de-zoomcamp-611---kafka-ksqldb--connect)
+* [DE Zoomcamp 6.12-Kafka Schema registry](#de-zoomcamp-612-kafka-schema-registry)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -255,3 +256,25 @@ The ksql statement above is a persistent query, which will always be running in 
 SELECT * FROM PAYMENT_TYPE_SESSIONS EMIT CHANGES;
 ```
 > Note: at the end of this lesson, do not forget to go to "Persistent Queries -> Terminate" to stop any persistent queries and avoid spending credits unnecessarily.
+
+## [DE Zoomcamp 6.12-Kafka Schema registry](https://www.youtube.com/watch?v=tBY_hBuyzwI)
+
+A schema works as a contract between the Producer and Consumers. For a given topic, there might be multiple schemas, but they need to be compatible to each other. All schemas are stored in a repository called schema registry, which takes care of the compatibility among them. This idea is illustrated in the figure below.
+
+![](./img/schema-registry1.png)
+
+[*Figure by the instructor*](https://youtu.be/tBY_hBuyzwI?t=63)
+
+A new Producer always start by publishing its schema to the schema registry, which acknowledges that this is the first time that the new Producer publishes a schema. Over time, if the schema changes and, if for some reason, it is not compatible with the old schema, the registry will inform in its acknowledgement that the Producer cannot produce using the new schema. In this scenario, Kafka will throw an exception and not allow the Producer to proceed.
+
+If the schema is new or compatible to an old schema, the Producer will start publishing messages to the referred topic. Then, consumers first read the schema from the registry and then start consuming messages from the topic. This process is shown in the following figure.
+
+![](./img/schema-registry2.png)
+
+[*Figure by the instructor*](https://youtu.be/tBY_hBuyzwI?t=287)
+
+Avro is an open source data serialization format. Schemas in Avro are defined using a JSON-like syntax (see the examples in the [avro directory](./java/kafka_examples/src/main/avro/)), but the data is stored in binary format which makes it a very efficient format. Additionally, Avro provides us with a set of other interesting features:
+
+![](./img/avro.png)
+
+[*Figure by the instructor*](https://youtu.be/tBY_hBuyzwI?t=544)
