@@ -8,7 +8,7 @@
 * [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
 * [DE Zoomcamp 6.10 - Kafka stream windowing](#de-zoomcamp-610---kafka-stream-windowing)
 * [DE Zoomcamp 6.11 - Kafka ksqldb & Connect](#de-zoomcamp-611---kafka-ksqldb--connect)
-* [DE Zoomcamp 6.12-Kafka Schema registry](#de-zoomcamp-612-kafka-schema-registry)
+* [DE Zoomcamp 6.12 - Kafka Schema registry](#de-zoomcamp-612-kafka-schema-registry)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -257,7 +257,7 @@ SELECT * FROM PAYMENT_TYPE_SESSIONS EMIT CHANGES;
 ```
 > Note: at the end of this lesson, do not forget to go to "Persistent Queries -> Terminate" to stop any persistent queries and avoid spending credits unnecessarily.
 
-## [DE Zoomcamp 6.12-Kafka Schema registry](https://www.youtube.com/watch?v=tBY_hBuyzwI)
+## [DE Zoomcamp 6.12 - Kafka Schema registry](https://www.youtube.com/watch?v=tBY_hBuyzwI)
 
 A schema works as a contract between the Producer and Consumers. For a given topic, there might be multiple schemas, but they need to be compatible to each other. All schemas are stored in a repository called schema registry, which takes care of the compatibility among them. This idea is illustrated in the figure below.
 
