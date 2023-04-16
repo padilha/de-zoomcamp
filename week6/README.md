@@ -7,6 +7,7 @@
 * [DE Zoomcamp 6.7 - Kafka streams basics](#de-zoomcamp-67---kafka-streams-basics)
 * [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
 * [DE Zoomcamp 6.10 - Kafka stream windowing](#de-zoomcamp-610---kafka-stream-windowing)
+* [DE Zoomcamp 6.11 - Kafka ksqldb & Connect](#de-zoomcamp-611---kafka-ksqldb--connect)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
@@ -183,3 +184,74 @@ Session windows are defined by an inactivity gap. That is, a new session is star
 ### Kafka example
 
 The example code of this lesson can be run by creating a topic named rides-pulocation-window-count in Confluent Cloud and running the [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java) and [JsonKStreamWindow.java](./java/kafka_examples/src/main/java/org/example/JsonKStreamWindow.java) classes.
+
+## [DE Zoomcamp 6.11 - Kafka ksqldb & Connect](https://www.youtube.com/watch?v=DziQ4a4tn9Y)
+
+**Step 1:** login to Confluent Cloud, go to ksqlDB and create a new global access cluster with default parameters.
+
+**Step 2:** run [JsonProducer.java](./java/kafka_examples/src/main/java/org/example/JsonProducer.java) to produce some messages.
+
+**Step 3:** go to the editor of your ksqldb cluster and run the following command to create a new stream:
+```sql
+CREATE STREAM ride_streams (
+    VendorId varchar, 
+    trip_distance double,
+    payment_type varchar,
+    passenger_count double
+)  WITH (KAFKA_TOPIC='rides',
+        VALUE_FORMAT='JSON');
+```
+The above command specifies the Kafka topic (rides), topic format (JSON) and which fields are going to be used. In this example, also set the auto.offset.reset option to "Earliest" (for more information on that, see my notes of [DE Zoomcamp 6.6 - Kafka configuration](#de-zoomcamp-66---kafka-configuration)).
+
+After running the ksql command, you should see an output similar to this one:
+```json
+{
+  "@type": "currentStatus",
+  "statementText": "CREATE STREAM RIDE_STREAMS (VENDORID STRING, TRIP_DISTANCE DOUBLE, PAYMENT_TYPE STRING, PASSENGER_COUNT DOUBLE) WITH (KAFKA_TOPIC='rides', KEY_FORMAT='KAFKA', VALUE_FORMAT='JSON');",
+  "commandId": "stream/`RIDE_STREAMS`/create",
+  "commandStatus": {
+    "status": "SUCCESS",
+    "message": "Stream created",
+    "queryId": null
+  },
+  "commandSequenceNumber": 2,
+  "warnings": [
+
+  ]
+}
+```
+
+**Step 4:** query the created stream.
+```sql
+SELECT * FROM RIDE_STREAMS 
+EMIT CHANGES;
+```
+```sql
+SELECT payment_type, count(*) FROM RIDE_STREAMS 
+WHERE payment_type IN ('1', '2')
+GROUP BY payment_type
+EMIT CHANGES;
+```
+```sql
+SELECT passenger_count, count(*) FROM RIDE_STREAMS 
+WHERE passenger_count < 3
+GROUP BY passenger_count
+EMIT CHANGES;
+```
+> Note: EMIT CHANGES specifies a Push Query, which presents results as records are inserted or updated in real time. For more information, see [SELECT (Push Query)](https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-reference/select-push-query/) and [Push Query](https://docs.ksqldb.io/en/latest/concepts/queries/#push).
+
+**Step 5:** query using window functions. In this example, we create a [session window](#de-zoomcamp-610---kafka-stream-windowing) of 60 seconds.
+```sql
+CREATE TABLE payment_type_sessions AS
+  SELECT payment_type,
+         count(*)
+  FROM  RIDE_STREAMS 
+  WINDOW SESSION (60 SECONDS)
+  GROUP BY payment_type
+  EMIT CHANGES;
+```
+The ksql statement above is a persistent query, which will always be running in background and storing results in the created table. We can query the created table as follows:
+```sql
+SELECT * FROM PAYMENT_TYPE_SESSIONS EMIT CHANGES;
+```
+> Note: at the end of this lesson, do not forget to go to "Persistent Queries -> Terminate" to stop any persistent queries and avoid spending credits unnecessarily.
