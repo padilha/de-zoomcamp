@@ -273,7 +273,7 @@ If the schema is new or compatible to an old schema, the Producer will start pub
 
 [*Figure by the instructor*](https://youtu.be/tBY_hBuyzwI?t=287)
 
-Avro is an open source data serialization format. Schemas in Avro are defined using a JSON-like syntax (see the examples in the [avro directory](./java/kafka_examples/src/main/avro/)), but the data is stored in binary format which makes it a very efficient format. Additionally, Avro provides us with a set of other interesting features:
+Avro is an open source data serialization format that works pretty well with Kafka. Schemas in Avro are defined using a JSON-like syntax (see the examples in the [avro directory](./java/kafka_examples/src/main/avro/)), but the data is stored in binary format which makes it a very efficient format. Additionally, Avro provides us with a set of other interesting features:
 
 ![](./img/avro.png)
 
