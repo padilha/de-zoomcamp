@@ -8,7 +8,7 @@
 * [DE Zoomcamp 6.8 - Kafka stream join](#de-zoomcamp-68---kafka-stream-join)
 * [DE Zoomcamp 6.10 - Kafka stream windowing](#de-zoomcamp-610---kafka-stream-windowing)
 * [DE Zoomcamp 6.11 - Kafka ksqldb & Connect](#de-zoomcamp-611---kafka-ksqldb--connect)
-* [DE Zoomcamp 6.12 - Kafka Schema registry](#de-zoomcamp-612-kafka-schema-registry)
+* [DE Zoomcamp 6.12 - Kafka Schema registry](#de-zoomcamp-612---kafka-schema-registry)
 
 ## [DE Zoomcamp 6.3 - What is kafka?](https://www.youtube.com/watch?v=zPLZUDPi4AY)
 
